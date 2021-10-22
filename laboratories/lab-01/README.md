@@ -4,7 +4,7 @@
 
 > Description: A simple introductory example into using Pthreads Library.
 
-I noticed that function `f` is executed `NUM_THREADS` times in paralel.
+I noticed that function `f` is executed `NUM_THREADS` times in parallel.
 
 Code source: `task1.c`
 
@@ -18,7 +18,7 @@ I wrote a `Makefile` that can be configured via command line. Running example:
 make NUM_THREADS=$(nproc) example
 ```
 
-An alternative solution is to use the offical hint:
+An alternative solution is to use the official hint:
 ```c
 #include <unistd.h>
  
@@ -31,9 +31,9 @@ Code source: `Makefile`
 
 > Description: Modify function `f` to write a 100 times "Hello World"
 
-Although we are running a multithread application, it runs concurent with the
+Although we are running a multithread application, it runs concurrent with the
 operating systems's other processes, meaning that it is multitasked. Therefore
-we don't see the threads producing an in order sequencial output stream, but
+we don't see the threads producing an in order sequential output stream, but
 rather a shuffled one.
 
 Code source: `task3.c`
@@ -52,11 +52,14 @@ Code source: `task4.c`
 
 > Description: Parallelize the serial incrementation of an array.
 
-We notice that the scheduler decides to run the multithread implementation on
-a single core at each point in time. Even if we use a `sched_setaffinity` call
-(in `weird.c`) the result is still the same, no performance increase.
-The only working option was to add a `LOAD_FACTOR` macro to harded the
-computational effort. Running examples:
+We notice that the multithread implementation does not perform better than a
+sequential solution. To see an improvement I added a `LOAD_FACTOR` macro to
+harden the computational effort. Without a `LOAD_FACTOR` the CPU was working
+with using too much information from DRAM. Since DRAM is much slower than the
+CPU frequency, each thread was mostly waiting for new data to be cached.
+
+With a proper `LOAD_FACTOR` gets to spend more time processing data than
+fetching it.
 
 ```bash
 $ make NUM_THREADS=$(nproc) task5
@@ -75,8 +78,8 @@ Code source: `task5.c` and `werid.c`
 
 > Description: Test the previous implementation's performance.
 
-In order to test the preformance of task5, I have created a bash script with
-the folowing usage:
+In order to test the performance of task5, I have created a bash script with
+the following usage:
 
 > Usage: ./test_time.sh number_of_tests array_size load_factor
 
@@ -99,4 +102,3 @@ Test 3: 0m0,170s
 ```
 
 Code source: `test_time.sh`
-
