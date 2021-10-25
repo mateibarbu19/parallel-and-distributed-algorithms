@@ -14,7 +14,7 @@ routine () {
     for i in {1..1000}; do
         diff  <(./mutex) <(echo "a = $correct_res")
         if [ $? -ne 0 ]; then
-        echo "Failure: A running instance outtputed a incorrect result"
+        echo "Failure: A running instance outputted a incorrect result"
             return 2
         fi
     done

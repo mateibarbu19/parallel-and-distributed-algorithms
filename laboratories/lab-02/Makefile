@@ -13,4 +13,5 @@ build: $(TARGETS)
 	$(CC) $(CFLAGS) $(PROTECTED) $(PFLAGS) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -rf $(TARGETS)
+	rm -f $(TARGETS)
+	rm -f seq.txt par_outer.txt par_middle.txt par_inner.txt

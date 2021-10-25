@@ -41,7 +41,7 @@ sleep 1
 echo "=== Running inner parallelized matrix multiplication algorithm ==="
 (time ./multiply_inner $N $P > par_inner.txt) 2> >(grep real | awk '{print $2}')
 sleep 1
-echo "=== Running sequential matrix multiplication algorithm ==="
+echo "=== Running sequential matrix multiplication algorithm (with cache tiling) ==="
 (time ./multiply_seq $N > seq.txt) 2> >(grep real | awk '{print $2}')
 sleep 1
 

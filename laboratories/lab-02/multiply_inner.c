@@ -1,5 +1,4 @@
 #include <pthread.h>
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,19 +14,31 @@ struct arg_t {
   int **b;
   int **c;
   size_t N;
-  size_t line_start;
-  size_t line_end;
+  size_t cursor_start;
+  size_t cursor_end;
+#ifdef PROTECTED
+  pthread_mutex_t *mutex;
+#endif
 };
 
 void *multiply_inner(void *arg) {
   struct arg_t *m_arg = (struct arg_t *)arg;
 
   size_t i, j, k;
-  for (i = m_arg->line_start; i < m_arg->line_end; i++) {
+  for (i = 0; i < m_arg->N; i++) {
     for (j = 0; j < m_arg->N; j++) {
-      for (k = 0; k < m_arg->N; k++) {
-        m_arg->c[i][j] += m_arg->a[i][k] * m_arg->b[k][j];
+      int sum = 0;
+      for (k = m_arg->cursor_start; k < m_arg->cursor_end; k++) {
+        sum += m_arg->a[i][k] * m_arg->b[k][j];
       }
+
+#ifdef PROTECTED
+      pthread_mutex_lock(m_arg->mutex);
+      m_arg->c[i][j] += sum;
+      pthread_mutex_unlock(m_arg->mutex);
+#else
+      m_arg->c[i][j] += sum;
+#endif
     }
   }
 
@@ -117,15 +128,24 @@ int main(int argc, char *argv[]) {
   pthread_t tid[P];
   struct arg_t args[P];
 
+#ifdef PROTECTED
+  pthread_mutex_t mutex;
+  pthread_mutex_init(&mutex, NULL);
+#endif
+
   for (i = 0; i < P; i++) {
     args[i].a = a;
     args[i].b = b;
     args[i].c = c;
     args[i].N = N;
-    args[i].line_start = i * N / P;
-    args[i].line_end = min((i + 1) * N / P, N);
-    int r = pthread_create(&tid[i], NULL, multiply_inner, &args[i]);
+    args[i].cursor_start = i * N / P;
+    args[i].cursor_end = min((i + 1) * N / P, N);
 
+#ifdef PROTECTED
+    args[i].mutex = &mutex;
+#endif
+
+    int r = pthread_create(&tid[i], NULL, multiply_inner, &args[i]);
     if (r) {
       fprintf(stderr, "An error occured while creating thread %u.", i);
       exit(-1);
@@ -141,6 +161,10 @@ int main(int argc, char *argv[]) {
       exit(-1);
     }
   }
+
+#ifdef PROTECTED
+  pthread_mutex_destroy(&mutex);
+#endif
 
   print(c, N);
 
