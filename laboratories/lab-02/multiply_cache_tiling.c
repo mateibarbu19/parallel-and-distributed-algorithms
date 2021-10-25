@@ -3,12 +3,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define min(a, b)                                                              \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a < _b ? _a : _b;                                                         \
+  })
+
+#define B 32
+
 void multiply_seq(int **a, int **b, int **c, size_t N) {
-  size_t i, j, k;
-  for (i = 0; i < N; i++) {
-    for (j = 0; j < N; j++) {
-      for (k = 0; k < N; k++) {
-        c[i][j] += a[i][k] * b[k][j];
+  size_t jj, kk, i, j, k;
+  int r;
+  for (jj = 0; jj < N; jj = jj + B) {
+    for (kk = 0; kk < N; kk = kk + B) {
+      for (i = 0; i < N; i++) {
+        for (j = jj; j < min(jj + B, N); j++) {
+          r = 0;
+          for (k = kk; k < min(kk + B, N); k++) {
+            r += a[i][k] * b[k][j];
+          }
+          c[i][j] += r;
+        }
       }
     }
   }

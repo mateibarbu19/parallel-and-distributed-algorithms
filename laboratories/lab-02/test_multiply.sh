@@ -4,9 +4,10 @@ N=1000
 P=$(nproc)
 
 make multiply_seq
-make multiply_inner
+make PROTECTED=-DPROTECTED multiply_inner
 make multiply_middle
-make PROTECTED=-DPROTECTED multiply_outer
+make multiply_outer
+make multiply_cache_tiling
 
 if [ ! -f "multiply_seq" ]
 then
@@ -41,9 +42,13 @@ sleep 1
 echo "=== Running inner parallelized matrix multiplication algorithm ==="
 (time ./multiply_inner $N $P > par_inner.txt) 2> >(grep real | awk '{print $2}')
 sleep 1
-echo "=== Running sequential matrix multiplication algorithm (with cache tiling) ==="
+echo "=== Running sequential matrix multiplication algorithm (trivial) ==="
 (time ./multiply_seq $N > seq.txt) 2> >(grep real | awk '{print $2}')
 sleep 1
+echo "=== Running sequential matrix multiplication algorithm (with cache tiling) ==="
+(time ./multiply_cache_tiling $N > seq.txt) 2> >(grep real | awk '{print $2}')
+sleep 1
+
 
 diff -q seq.txt par_outer.txt
 if [ $? -ne 0 ]; then
@@ -64,4 +69,4 @@ fi
 echo "Success: All algorithms outputted the same result"
 
 rm -f seq.txt par_outer.txt par_middle.txt par_inner.txt
-rm -f multiply_seq multiply_outer multiply_middle multiply_inner
+rm -f multiply_seq multiply_outer multiply_middle multiply_inner multiply_cache_tiling

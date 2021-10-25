@@ -1,4 +1,4 @@
-# Laboratory Exercise 1
+# Laboratory Exercises 1
 
 ## Task 1
 
@@ -72,7 +72,7 @@ $ ./task5-test 10 1
 100 101 102 103 104 105 106 107 108 109
 ```
 
-Code source: `task5.c` and `werid.c`
+Code sources: `task5.c` and `werid.c`
 
 ## Task 6
 
@@ -101,4 +101,4 @@ Test 2: 0m0,168s
 Test 3: 0m0,170s
 ```
 
-Code source: `test_time.sh`
+Code sources: `test_time.sh`
