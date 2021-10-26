@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
 
   unsigned int i;
   void *status;
-  pthread_t threads[NUM_THREADS];
+  pthread_t threads[MAX_NUM_THREADS];
   struct arg_t args[MAX_NUM_THREADS];
   struct data_t data;
   data.N = atoi(argv[1]);
@@ -267,7 +267,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef PROTECTED
   pthread_barrier_t barrier;
-  pthread_barrier_init(&barrier, NULL, NUM_THREADS);
+  pthread_barrier_init(&barrier, NULL, MAX_NUM_THREADS);
 #endif
 
   for (i = 0; i < MAX_NUM_THREADS; i++) {
