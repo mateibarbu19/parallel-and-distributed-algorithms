@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_M_THREADS 7
-#define MAX_C_THREADS 4
+#define MAX_NUM_THREADS 7
 
 struct data_t {
   unsigned int N;
@@ -32,6 +31,9 @@ struct data_t {
 struct arg_t {
   unsigned int thread_id;
   struct data_t *data;
+#ifdef PROTECTED
+  pthread_barrier_t *barrier;
+#endif
 };
 
 void free_matrix(int **a, size_t n) {
@@ -169,7 +171,7 @@ void init(struct data_t *data) {
   }
 }
 
-void* calc_M(void *arg) {
+void* calc(void *arg) {
   struct arg_t *m_arg = (struct arg_t*) arg;
   struct data_t *data = m_arg->data;
 
@@ -212,14 +214,13 @@ void* calc_M(void *arg) {
     add_matrix(data->AUXM72, 0, 0, data->b, data->N / 2, 0, data->b, data->N / 2, data->N / 2, data->N);
     mul_matrix(data->M7, 0, 0, data->AUXM71, 0, 0, data->AUXM72, 0, 0, data->N);
     break;
+  default:
+    break;
   }
 
-  pthread_exit(NULL);
-}
-
-void* calc_C(void * arg) {
-    struct arg_t *m_arg = (struct arg_t*) arg;
-  struct data_t *data = m_arg->data;
+#ifdef PROTECTED
+  pthread_barrier_wait(m_arg->barrier);
+#endif
 
   switch (m_arg->thread_id) {
   case 0:
@@ -242,6 +243,8 @@ void* calc_C(void * arg) {
     add_matrix(data->c, data->N / 2, data->N / 2, data->c, data->N / 2, data->N / 2, data->M3, 0, 0, data->N);
     add_matrix(data->c, data->N / 2, data->N / 2, data->c, data->N / 2, data->N / 2, data->M6, 0, 0, data->N);
     break;
+  default:
+    break;
   }
 
   pthread_exit(NULL);
@@ -256,7 +259,7 @@ int main(int argc, char *argv[]) {
   unsigned int i;
   void *status;
   pthread_t threads[NUM_THREADS];
-  struct arg_t args[MAX_M_THREADS];
+  struct arg_t args[MAX_NUM_THREADS];
   struct data_t data;
   data.N = atoi(argv[1]);
 
@@ -267,38 +270,22 @@ int main(int argc, char *argv[]) {
   pthread_barrier_init(&barrier, NULL, NUM_THREADS);
 #endif
 
-  for (i = 0; i < MAX_M_THREADS; i++) {
+  for (i = 0; i < MAX_NUM_THREADS; i++) {
     args[i].thread_id = i;
     args[i].data = &data;
 
-    int r = pthread_create(&threads[i], NULL, calc_M, &args[i]);
+#ifdef PROTECTED
+    args[i].barrier = &barrier;
+#endif
+
+    int r = pthread_create(&threads[i], NULL, calc, &args[i]);
     if (r) {
       fprintf(stderr, "An error occured while creating thread %u.", i);
       exit(-1);
     }
   }
 
-#ifdef PROTECTED
-  pthread_barrier_wait(&barrier);
-#endif
-
-  for (i = 0; i < MAX_C_THREADS; i++) {
-    args[i].thread_id = i;
-    args[i].data = &data;
-
-    int r = pthread_create(&threads[i], NULL, calc_C, &args[i]);
-    if (r) {
-      fprintf(stderr, "An error occured while creating thread %u.", i);
-      exit(-1);
-    }
-  }
-
-#ifdef PROTECTED
-  pthread_barrier_wait(&barrier);
-  pthread_barrier_destroy(&barrier);
-#endif
-
-  for (i = 0; i < MAX_M_THREADS; i++) {
+  for (i = 0; i < MAX_NUM_THREADS; i++) {
     int r = pthread_join(threads[i], &status);
 
     if (r) {
@@ -307,6 +294,10 @@ int main(int argc, char *argv[]) {
       exit(-1);
     }
   }
+
+#ifdef PROTECTED
+  pthread_barrier_destroy(&barrier);
+#endif
 
   print(data.c, data.N);
 
