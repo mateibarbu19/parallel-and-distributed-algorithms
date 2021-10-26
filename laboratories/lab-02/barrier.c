@@ -34,8 +34,10 @@ int main(void) {
   pthread_t threads[NUM_THREADS];
   struct arg_t arguments[NUM_THREADS];
 
+#ifdef PROTECTED
   pthread_barrier_t barrier;
   pthread_barrier_init(&barrier, NULL, NUM_THREADS);
+#endif
 
   for (i = 0; i < NUM_THREADS; i++) {
     arguments[i].thread_id = i;

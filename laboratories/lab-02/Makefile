@@ -14,4 +14,4 @@ build: $(TARGETS)
 
 clean:
 	rm -f $(TARGETS)
-	rm -f seq.txt par_outer.txt par_middle.txt par_inner.txt
+	rm -f seq.txt par_outer.txt par_middle.txt par_inner.txt par.txt

@@ -172,49 +172,49 @@ int main(int argc, char *argv[]) {
 
   init(&data);
 
-  // calculul matricii M1
+  // compute matrix M1
   add_matrix(data.AUXM11, 0, 0, data.a, 0, 0, data.a, data.N / 2, data.N / 2, data.N);
   add_matrix(data.AUXM12, 0, 0, data.b, 0, 0, data.b, data.N / 2, data.N / 2, data.N);
   mul_matrix(data.M1, 0, 0, data.AUXM11, 0, 0, data.AUXM12, 0, 0, data.N);
 
-  // calculul matricii M2
+  // compute matrix M2
   add_matrix(data.AUXM21, 0, 0, data.a, data.N / 2, 0, data.a, data.N / 2, data.N / 2, data.N);
   mul_matrix(data.M2, 0, 0, data.AUXM21, 0, 0, data.b, 0, 0, data.N);
 
-  // calculul matricii M3
+  // compute matrix M3
   sub_matrix(data.AUXM31, 0, 0, data.b, 0, data.N / 2, data.b, data.N / 2, data.N / 2, data.N);
   mul_matrix(data.M3, 0, 0, data.a, 0, 0, data.AUXM31, 0, 0, data.N);
 
-  // calculul matricii M4
+  // compute matrix M4
   sub_matrix(data.AUXM41, 0, 0, data.b, data.N / 2, 0, data.b, 0, 0, data.N);
   mul_matrix(data.M4, 0, 0, data.a, data.N / 2, data.N / 2, data.AUXM41, 0, 0, data.N);
 
-  // calculul matricii M5
+  // compute matrix M5
   add_matrix(data.AUXM51, 0, 0, data.a, 0, 0, data.a, 0, data.N / 2, data.N);
   mul_matrix(data.M5, 0, 0, data.AUXM51, 0, 0, data.b, data.N / 2, data.N / 2, data.N);
 
-  // calculul matricii M6
+  // compute matrix M6
   sub_matrix(data.AUXM61, 0, 0, data.a, data.N / 2, 0, data.a, 0, 0, data.N);
   add_matrix(data.AUXM62, 0, 0, data.b, 0, 0, data.b, 0, data.N / 2, data.N);
   mul_matrix(data.M6, 0, 0, data.AUXM61, 0, 0, data.AUXM62, 0, 0, data.N);
 
-  // calculul matricii M7
+  // compute matrix M7
   sub_matrix(data.AUXM71, 0, 0, data.a, 0, data.N / 2, data.a, data.N / 2, data.N / 2, data.N);
   add_matrix(data.AUXM72, 0, 0, data.b, data.N / 2, 0, data.b, data.N / 2, data.N / 2, data.N);
   mul_matrix(data.M7, 0, 0, data.AUXM71, 0, 0, data.AUXM72, 0, 0, data.N);
 
-  // calculul submatricii C1,1
+  // compute submatrix C1,1
   add_matrix(data.c, 0, 0, data.M1, 0, 0, data.M4, 0, 0, data.N);
   sub_matrix(data.c, 0, 0, data.c, 0, 0, data.M5, 0, 0, data.N);
   add_matrix(data.c, 0, 0, data.c, 0, 0, data.M7, 0, 0, data.N);
 
-  // calculul submatricii C1,2
+  // compute submatrix C1,2
   add_matrix(data.c, 0, data.N / 2, data.M3, 0, 0, data.M5, 0, 0, data.N);
 
-  // calculul submatricii C2,1
+  // compute submatrix C2,1
   add_matrix(data.c, data.N / 2, 0, data.M2, 0, 0, data.M4, 0, 0, data.N);
 
-  // calculul submatricii C2,2
+  // compute submatrix C2,2
   sub_matrix(data.c, data.N / 2, data.N / 2, data.M1, 0, 0, data.M2, 0, 0, data.N);
   add_matrix(data.c, data.N / 2, data.N / 2, data.c, data.N / 2, data.N / 2, data.M3, 0, 0, data.N);
   add_matrix(data.c, data.N / 2, data.N / 2, data.c, data.N / 2, data.N / 2, data.M6, 0, 0, data.N);

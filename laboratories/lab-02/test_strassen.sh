@@ -1,10 +1,9 @@
 #!/bin/bash
 
 N=1000
-P=$(nproc)
 
 make strassen
-make NUM_THREADS="$P" -DPROTECTED strassen_par
+make PROTECTED="-DPROTECTED" strassen_par
 
 if [ ! -f "strassen" ]
 then
