@@ -13,14 +13,15 @@ struct arg_t {
 
 void compare_vectors(int *a, int *b, size_t N) {
   size_t i = 0;
-  while (i < N) {
-    if (a[i] != b[i]) {
-      printf("Incorrect sort\n");
-      return;
-    }
+  while (i < N && a[i] == b[i]) {
+    i++;
   }
-
-  printf("Correct sort\n");
+  if (i == N) {
+    printf("Correct sort\n");
+  }
+  else {
+    printf("Incorrect sort\n");
+  }
 }
 
 void display_vector(int *v, size_t N) {
@@ -40,31 +41,31 @@ int cmp(const void *a, const void *b) {
   return A - B;
 }
 
-void print(int *v, int *vSorted, size_t N) {
+void print(int *v, int *v_sorted, size_t N) {
   // print the correct array
   // print the current array
   // and compare them
   printf("v:\n");
   display_vector(v, N);
-  printf("vQSort:\n");
-  display_vector(vSorted, N);
-  compare_vectors(v, vSorted, N);
+  printf("v_qsort:\n");
+  display_vector(v_sorted, N);
+  compare_vectors(v, v_sorted, N);
 }
 
 void *oets(void *arg) {
   struct arg_t *data = (struct arg_t *)arg;
   size_t k, i;
 
+
   for (k = 0; k < data->N; k++) {
-    for (i = data->start; i < data->end - 1; i += 2) {
+    for (i = data->start; i < data->end; i += 2) {
       if (data->array[i] > data->array[i + 1]) {
-        printf("i:%zu %d %d\n", i, data->array[i], data->array[i + 1]);
         swap(data->array[i], data->array[i + 1]);
       }
     }
     pthread_barrier_wait(data->barrier);
 
-    for (i = data->start + 1; i < data->end - 1; i += 2) {
+    for (i = data->start + 1; i < data->end; i += 2) {
       if (data->array[i] > data->array[i + 1]) {
         swap(data->array[i], data->array[i + 1]);
       }
@@ -94,33 +95,28 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  int *vQSort = malloc(sizeof(int) * N);
-  if (vQSort == NULL) {
+  int *v_qsort = malloc(sizeof(int) * N);
+  if (v_qsort == NULL) {
     fprintf(stderr, "Error on malloc!");
     exit(2);
   }
 
   srand(42);
   for (i = 0; i < N; i++) {
-    vQSort[i] = v[i] = rand() % N;
+    v_qsort[i] = v[i] = rand() % N;
   }
-  qsort(vQSort, N, sizeof(int), cmp);
+  qsort(v_qsort, N, sizeof(int), cmp);
 
   pthread_barrier_init(&barrier, NULL, P);
 
   // se creeaza thread-urile
   for (i = 0; i < P; i++) {
-    args[i].start = i * (N / P);
-    args[i].start -= args[i].start & 1;
-    args[i].end = min((i + 1) * N / P, N);
-    args[i].end -= args[i].end & 1;
-    if (i == P - 1) {
-      args[i].end = N;
-    }
-    printf("%d %d\n", args[i].start, args[i].end);
+    args[i].start = make_even(i * N / P);
+    args[i].end = min(make_even((i + 1) * N / P), N - 1);
     args[i].N = N;
     args[i].array = v;
     args[i].barrier = &barrier;
+    printf("%d %d\n", args[i].start, args[i].end);
     int r = pthread_create(&tid[i], NULL, oets, &args[i]);
 
     if (r) {
@@ -140,10 +136,10 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  print(v, vQSort, N);
+  print(v, v_qsort, N);
 
   free(v);
-  free(vQSort);
+  free(v_qsort);
 
   return 0;
 }
