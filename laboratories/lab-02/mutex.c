@@ -40,7 +40,7 @@ int main(void) {
 #endif
 
     if (r) {
-      fprintf(stderr, "An error occured while creating thread %hu.", i);
+      fprintf(stderr, "An error occurred while creating thread %hu.", i);
       exit(-1);
     }
   }
@@ -49,7 +49,7 @@ int main(void) {
     r = pthread_join(threads[i], &status);
 
     if (r) {
-      fprintf(stderr, "An error occured while waiting for thread %hu", i);
+      fprintf(stderr, "An error occurred while waiting for thread %hu", i);
       fprintf(stderr, "to finish.\n");
       exit(-1);
     }

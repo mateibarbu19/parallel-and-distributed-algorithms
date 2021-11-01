@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     r = pthread_create(&threads[id], NULL, add_scalar, &args[id]);
     if (r) {
-      fprintf(stderr, "An error occured while creating thread %hu.", id);
+      fprintf(stderr, "An error occurred while creating thread %hu.", id);
       exit(-1);
     }
   }
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     r = pthread_join(threads[id], &status);
 
     if (r) {
-      fprintf(stderr, "An error occured while waiting for thread %hu", id);
+      fprintf(stderr, "An error occurred while waiting for thread %hu", id);
       fprintf(stderr, "to finish.\n");
       exit(-1);
     }

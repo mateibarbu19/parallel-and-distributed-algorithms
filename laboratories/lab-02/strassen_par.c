@@ -280,7 +280,7 @@ int main(int argc, char *argv[]) {
 
     int r = pthread_create(&threads[i], NULL, calc, &args[i]);
     if (r) {
-      fprintf(stderr, "An error occured while creating thread %u.", i);
+      fprintf(stderr, "An error occurred while creating thread %u.", i);
       exit(-1);
     }
   }
@@ -289,7 +289,7 @@ int main(int argc, char *argv[]) {
     int r = pthread_join(threads[i], &status);
 
     if (r) {
-      fprintf(stderr, "An error occured while waiting for thread %u", i);
+      fprintf(stderr, "An error occurred while waiting for thread %u", i);
       fprintf(stderr, "to finish.\n");
       exit(-1);
     }

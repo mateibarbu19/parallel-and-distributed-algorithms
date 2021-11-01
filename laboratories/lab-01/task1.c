@@ -20,7 +20,7 @@ int main(void) {
     r = pthread_create(&threads[id], NULL, f, &ids[id]);
 
     if (r) {
-      fprintf(stderr, "An error occured while creating thread %ld.", id);
+      fprintf(stderr, "An error occurred while creating thread %ld.", id);
       exit(-1);
     }
   }
@@ -29,7 +29,7 @@ int main(void) {
     r = pthread_join(threads[id], &status);
 
     if (r) {
-      fprintf(stderr, "An error occured while waiting for thread %ld", id);
+      fprintf(stderr, "An error occurred while waiting for thread %ld", id);
       exit(-1);
     }
   }
