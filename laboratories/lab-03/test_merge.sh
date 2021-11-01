@@ -1,6 +1,24 @@
 #!/bin/bash
 
-make
+routine () {
+    echo "=== Testing for N = $1 P = $2 ==="
+    (time ./merge $1 $2) 2> time.txt 1> content.txt
+    echo -n "Time: "; grep real time.txt | awk '{print $2}'
+    grep -q "Correct sort" content.txt
+    if [ $? -eq 0 ]; then
+        echo "Correct sort"
+    else
+        echo "Incorrect sort"  
+    fi
+    
+    echo
+    rm -f time.txt content.txt
+}
+
+Ns=(64 100 128 337 500 1000 10000 100000)
+Ps=( 4   5   8   3   7    4     6      8) 
+
+make merge
 
 if [ ! -f "merge" ]
 then
@@ -8,50 +26,8 @@ then
     exit 1
 fi
 
-if ./merge 64 3 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 64 P = 3"
-else
-    echo "Incorrect sort for N = 64 P = 3"  
-fi
+for key in "${!Ns[@]}"; do
+    routine ${Ns["$key"]} ${Ps["$key"]}
+done
 
-if ./merge 128 4 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 128 P = 4"
-else
-    echo "Incorrect sort for N = 128 P = 4" 
-fi
-
-if ./merge 128 7 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 128 P = 7"
-else
-    echo "Incorrect sort for N = 128 P = 7"
-fi
-
-if ./merge 512 2 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 512 P = 2"
-else
-    echo "Incorrect sort for N = 512 P = 2"
-fi
-
-if ./merge 512 7 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 512 P = 7"
-else
-    echo "Incorrect sort for N = 512 P = 7"
-fi
-
-if ./merge 1024 4 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 1024 P = 4"
-else
-    echo "Incorrect sort for N = 1024 P = 4"
-fi
-
-if ./merge 1024 6 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 1024 P = 6"
-else
-    echo "Incorrect sort for N = 1024 P = 6"
-fi
-
-if ./merge 1024 7 | grep -q "Correct sort"; then
-    echo "Correct sort for N = 1024 P = 7"
-else
-    echo "Incorrect sort for N = 1024 P = 7"
-fi
+rm -f merge

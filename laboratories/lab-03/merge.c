@@ -2,45 +2,61 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "utils.h"
 
-int N;
-int P;
-int *v;
-int *vQSort;
-int *vNew;
+struct arg_t {
+  unsigned int thread_id;
+  int *v, *v_new;
+  size_t N;
+  unsigned int P;
+  pthread_barrier_t *barrier;
+};
 
-void merge(int *source, int start, int mid, int end, int *destination) {
-  int iA = start;
-  int iB = mid;
-  int i;
+void merge(int *source, size_t start, size_t mid, size_t end, int *destination) {
+  size_t iA = start, iB = mid, i = start;
 
-  for (i = start; i < end; i++) {
-    if (end == iB || (iA < mid && source[iA] <= source[iB])) {
-      destination[i] = source[iA];
-      iA++;
+  while (iA < mid && iB < end) {
+    if (source[iA] <= source[iB]) {
+      destination[i++] = source[iA++];
     } else {
-      destination[i] = source[iB];
-      iB++;
-    }
-  }
-}
-
-void compare_vectors(int *a, int *b) {
-  int i;
-
-  for (i = 0; i < N; i++) {
-    if (a[i] != b[i]) {
-      printf("Incorrect sort\n");
-      return;
+      destination[i++] = source[iB++];
     }
   }
 
-  printf("Correct sort\n");
+  while (iA < mid) {
+    destination[i++] = source[iA++];
+  }
+
+  while (iB < end) {
+    destination[i++] = source[iB++];
+  }
 }
 
-void display_vector(int *v) {
-  int i;
-  int display_width = 2 + log10(N);
+int *alloc_vector(size_t n) {
+  int *v = malloc(n * sizeof(int));
+  if (v == NULL) {
+    fprintf(stderr, "alloc_vector: vector malloc failed!");
+  }
+  return v;
+}
+
+void compare_vectors(int *a, int *b, size_t N) {
+  size_t i = 0;
+  while (i < N && a[i] == b[i]) {
+    i++;
+  }
+  if (i == N) {
+    printf("Correct sort\n");
+  }
+  else {
+    printf("Incorrect sort\n");
+  }
+}
+
+void display_vector(int *v, size_t N) {
+  size_t i;
+  unsigned int display_width = 2 + log10(N);
 
   for (i = 0; i < N; i++) {
     printf("%*i", display_width, v[i]);
@@ -55,103 +71,115 @@ int cmp(const void *a, const void *b) {
   return A - B;
 }
 
-int is_power_of_two(int n) {
-  if (n == 0) {
-    return 0;
-  }
-
-  return (ceil(log2(n)) == floor(log2(n)));
-}
-
-void get_args(int argc, char **argv) {
-  if (argc < 3) {
-    printf("Usage: ./merge N P (N trebuie sa fie putere a lui 2)\n");
-    exit(1);
-  }
-
-  N = atoi(argv[1]);
-  if (!is_power_of_two(N)) {
-    printf("N trebuie sa fie putere a lui 2\n");
-    exit(1);
-  }
-
-  P = atoi(argv[2]);
-}
-
-void init() {
-  int i;
-  v = malloc(sizeof(int) * N);
-  vQSort = malloc(sizeof(int) * N);
-  vNew = malloc(sizeof(int) * N);
-
-  if (v == NULL || vQSort == NULL || vNew == NULL) {
-    fprintf(stderr, "Error on malloc!");
-    exit(1);
-  }
-
-  srand(42);
-
-  for (i = 0; i < N; i++)
-    v[i] = rand() % N;
-}
-
-void print() {
+void print(int *v, int *v_sorted, size_t N) {
+  // print the current array
+  // print the correct array
+  // and compare them
   printf("v:\n");
-  display_vector(v);
-  printf("vQSort:\n");
-  display_vector(vQSort);
-  compare_vectors(v, vQSort);
+  display_vector(v, N);
+  printf("v_qsort:\n");
+  display_vector(v_sorted, N);
+  compare_vectors(v, v_sorted, N);
 }
 
-void *thread_function(void *arg) {
-  int thread_id = *(int *)arg;
+void *mergesort_p(void *arg) {
+  struct arg_t *data = (struct arg_t *)arg;
+  unsigned int start = data->thread_id * data->N / data->P; 
+  unsigned int end = (data->thread_id + 1) * data->N / data->P;
 
-  // implementati aici merge sort paralel
+  unsigned int width, i;
+  for (width = 1; width < (end - start); width <<= 1) {
+    for (i = start; i < end - width; i = i + 2 * width) {
+      unsigned int last = min(i + 2 * width, end);
+      merge(data->v, i, i + width, last, data->v_new);
+      memcpy(data->v + i, data->v_new + i, (last - i) * sizeof(int));
+    }
+  }
+
+  unsigned int l = 1;
+  while (l < data->P && (data->thread_id & l) == 0) {
+    pthread_barrier_wait(data->barrier);
+    u_int mid_new = min(
+                      (data->thread_id + l) * data->N / data->P,
+                      data->N
+                    );
+    u_int end_new = min(
+                      (data->thread_id + 2 * l) * data->N / data->P,
+                      data->N
+                    );
+    merge(data->v, start, mid_new, end_new, data->v_new);
+    memcpy(data->v + start, data->v_new + start, (end_new - start) * sizeof(int));
+    l <<= 1;
+  }
+
+  while (l < data->P) {
+    pthread_barrier_wait(data->barrier);
+    l <<= 1;
+  }
 
   pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[]) {
-  get_args(argc, argv);
-  init();
+  if (argc < 3) {
+    printf("Usage: ./merge N P\n");
+    exit(1);
+  }
 
-  int i;
-  int thread_id[P];
+  unsigned int N = atoi(argv[1]);
+  unsigned int P = atoi(argv[2]);
+  unsigned int i;
+  
+  int *v = alloc_vector(N);
+  int *v_qsort = alloc_vector(N);
+  int *v_new = alloc_vector(N);
+
+  if (v == NULL || v_qsort == NULL || v_new == NULL) {
+    fprintf(stderr, "Error on initializing values!");
+    exit(1);
+  }
+
+  srand(42);
+  for (i = 0; i < N; i++) {
+    v_qsort[i] = v[i] = rand() % N;
+  }
+  qsort(v_qsort, N, sizeof(int), cmp);
+
   pthread_t tid[P];
+  struct arg_t args[P];
+  pthread_barrier_t barrier;
+  pthread_barrier_init(&barrier, NULL, P);
 
-  // se sorteaza vectorul etalon
-  for (i = 0; i < N; i++)
-    vQSort[i] = v[i];
-  qsort(vQSort, N, sizeof(int), cmp);
-
-  // se creeaza thread-urile
   for (i = 0; i < P; i++) {
-    thread_id[i] = i;
-    pthread_create(&tid[i], NULL, thread_function, &thread_id[i]);
-  }
+    args[i].thread_id = i;
+    args[i].v = v;
+    args[i].v_new = v_new;
+    args[i].N = N;
+    args[i].P = P;
+    args[i].barrier = &barrier;
+    int r = pthread_create(&tid[i], NULL, mergesort_p, &args[i]);
 
-  // se asteapta thread-urile
-  for (i = 0; i < P; i++) {
-    pthread_join(tid[i], NULL);
-  }
-
-  // merge sort clasic - trebuie paralelizat
-  int width, *aux;
-  for (width = 1; width < N; width = 2 * width) {
-    for (i = 0; i < N; i = i + 2 * width) {
-      merge(v, i, i + width, i + 2 * width, vNew);
+    if (r) {
+      fprintf(stderr, "An error occurred while creating thread %u.", i);
+      exit(-1);
     }
-
-    aux = v;
-    v = vNew;
-    vNew = aux;
   }
 
-  print();
+  for (i = 0; i < P; i++) {
+    int r = pthread_join(tid[i], NULL);
+
+    if (r) {
+      fprintf(stderr, "An error occurred while waiting for thread %u", i);
+      fprintf(stderr, "to finish.\n");
+      exit(-1);
+    }
+  }
+
+  print(v, v_qsort, N);
 
   free(v);
-  free(vQSort);
-  free(vNew);
+  free(v_qsort);
+  free(v_new);
 
   return 0;
 }

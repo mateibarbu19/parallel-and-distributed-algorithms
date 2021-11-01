@@ -115,7 +115,6 @@ int main(int argc, char *argv[]) {
     args[i].N = N;
     args[i].array = v;
     args[i].barrier = &barrier;
-    printf("%d %d\n", args[i].start, args[i].end);
     int r = pthread_create(&tid[i], NULL, oets_p, &args[i]);
 
     if (r) {

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -ggdb -O0
 LDFLAGS = -lpthread -lm
 TARGETS = oets shear merge parallel_binary_search
 

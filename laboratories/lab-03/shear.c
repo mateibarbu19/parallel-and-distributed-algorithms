@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
 
   for (i = 0; i < P; i++) {
     args[i].start = i * L / P;
-    args[i].end = min((i + 1) * L / P, L);
+    args[i].end = (i + 1) * L / P;
     args[i].L = L;
     args[i].M = M;
     args[i].barrier = &barrier;
