@@ -42,8 +42,8 @@ int cmp(const void *a, const void *b) {
 }
 
 void print(int *v, int *v_sorted, size_t N) {
-  // print the correct array
   // print the current array
+  // print the correct array
   // and compare them
   printf("v:\n");
   display_vector(v, N);
@@ -52,7 +52,7 @@ void print(int *v, int *v_sorted, size_t N) {
   compare_vectors(v, v_sorted, N);
 }
 
-void *oets(void *arg) {
+void *oets_p(void *arg) {
   struct arg_t *data = (struct arg_t *)arg;
   size_t k, i;
 
@@ -109,7 +109,6 @@ int main(int argc, char *argv[]) {
 
   pthread_barrier_init(&barrier, NULL, P);
 
-  // se creeaza thread-urile
   for (i = 0; i < P; i++) {
     args[i].start = make_even(i * N / P);
     args[i].end = min(make_even((i + 1) * N / P), N - 1);
@@ -117,20 +116,19 @@ int main(int argc, char *argv[]) {
     args[i].array = v;
     args[i].barrier = &barrier;
     printf("%d %d\n", args[i].start, args[i].end);
-    int r = pthread_create(&tid[i], NULL, oets, &args[i]);
+    int r = pthread_create(&tid[i], NULL, oets_p, &args[i]);
 
     if (r) {
-      fprintf(stderr, "An error occured while creating thread %u.", i);
+      fprintf(stderr, "An error occurred while creating thread %u.", i);
       exit(-1);
     }
   }
 
-  // se asteapta thread-urile
   for (i = 0; i < P; i++) {
     int r = pthread_join(tid[i], NULL);
 
     if (r) {
-      fprintf(stderr, "An error occured while waiting for thread %u", i);
+      fprintf(stderr, "An error occurred while waiting for thread %u", i);
       fprintf(stderr, "to finish.\n");
       exit(-1);
     }

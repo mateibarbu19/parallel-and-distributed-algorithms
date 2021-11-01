@@ -6,7 +6,7 @@
 > Sort.
 
 At first, I divided the array in `P` parts. Each threads receives the part of the array from `[start, end - 1]`. (`start` and `end` indices are set to be an even number).
-On each of these parts, the algorithm in the `oets` function, repeats `N` time, two stages. These are:
+On each of these parts, the algorithm in the `oets_p` function, repeats `N` time, two stages. These are:
 
 - Even stage: take an iterator, from `start` to `end - 2`, included, and hop
     from an even to an even index; if the number on that position is less then

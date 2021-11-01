@@ -1,55 +1,33 @@
 #!/bin/bash
 
+routine () {
+    echo "=== Testing for L = $1 P = $2 ==="
+    (time ./shear $1 $2) 2> time.txt 1> content.txt
+    echo -n "Time: "; grep real time.txt | awk '{print $2}'
+    grep -q "Correct sort" content.txt
+    if [ $? -eq 0 ]; then
+        echo "Correct sort"
+    else
+        echo "Incorrect sort"  
+    fi
+    
+    echo
+    rm -f time.txt content.txt
+}
+
+Ls=(10 10 10 10 50 100 100 100)
+Ps=( 3  5  6  7  7   4   6   8) 
+
+make shear
+
 if [ ! -f "shear" ]
 then
     echo "The build for binary \"shear\" failed"
     exit 1
 fi
 
-if ./shear 10 3 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 10 P = 3"
-else
-    echo "Incorrect sort for L = 10 P = 3"  
-fi
+for key in "${!Ls[@]}"; do
+    routine ${Ls["$key"]} ${Ps["$key"]}
+done
 
-if ./shear 10 5 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 10 P = 5"
-else
-    echo "Incorrect sort for L = 10 P = 5" 
-fi
-
-if ./shear 10 6 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 10 P = 6"
-else
-    echo "Incorrect sort for L = 10 P = 6"
-fi
-
-if ./shear 10 7 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 10 P = 7"
-else
-    echo "Incorrect sort for L = 10 P = 7"
-fi
-
-if ./shear 50 7 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 50 P = 7"
-else
-    echo "Incorrect sort for L = 50 P = 7"
-fi
-
-if ./shear 100 4 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 100 P = 4"
-else
-    echo "Incorrect sort for L = 100 P = 4"
-fi
-
-if ./shear 100 6 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 100 P = 6"
-else
-    echo "Incorrect sort for L = 100 P = 6"
-fi
-
-if ./shear 100 7 | grep -q "Correct sort"; then
-    echo "Correct sort for L = 100 P = 7"
-else
-    echo "Incorrect sort for L = 100 P = 7"
-fi
+rm -f shear
