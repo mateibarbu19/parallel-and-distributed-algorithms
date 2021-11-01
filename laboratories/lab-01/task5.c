@@ -6,13 +6,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define min(a, b)           \
-  ({                        \
-    __typeof__(a) _a = (a); \
-    __typeof__(b) _b = (b); \
-    _a < _b ? _a : _b;      \
-  })
-
 struct arg_t {
   unsigned int *arr;
   size_t start, end;
@@ -72,7 +65,7 @@ int main(int argc, char *argv[]) {
   for (unsigned short id = 0; id < NUM_THREADS; id++) {
     args[id].arr = arr;
     args[id].start = id * array_size / NUM_THREADS;
-    args[id].end = min((id + 1) * array_size / NUM_THREADS, array_size);
+    args[id].end = (id + 1) * array_size / NUM_THREADS;
     args[id].scalar = (unsigned int)constant;
 
     r = pthread_create(&threads[id], NULL, add_scalar, &args[id]);

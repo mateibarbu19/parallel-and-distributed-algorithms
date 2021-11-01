@@ -2,13 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define min(a, b)                                                              \
-  ({                                                                           \
-    __typeof__(a) _a = (a);                                                    \
-    __typeof__(b) _b = (b);                                                    \
-    _a < _b ? _a : _b;                                                         \
-  })
-
 struct arg_t {
   int **a;
   int **b;
@@ -139,7 +132,7 @@ int main(int argc, char *argv[]) {
     args[i].c = c;
     args[i].N = N;
     args[i].cursor_start = i * N / P;
-    args[i].cursor_end = min((i + 1) * N / P, N);
+    args[i].cursor_end = (i + 1) * N / P;
 
 #ifdef PROTECTED
     args[i].mutex = &mutex;
