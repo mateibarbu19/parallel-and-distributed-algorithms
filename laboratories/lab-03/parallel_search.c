@@ -12,7 +12,7 @@ typedef struct {
 } interval_t;
 
 typedef struct {
-  int thread_id;
+  unsigned int thread_id;
   size_t N;
   unsigned int P;
   int number;
@@ -33,6 +33,14 @@ void *alloc_vector(size_t nmemb, size_t size) {
   return v;
 }
 
+static inline size_t new_start(size_t start, size_t end, u_int tid, u_int P) {
+  return start + tid * (end - start) / P;
+}
+
+static inline size_t new_end(size_t start, size_t end, u_int tid, u_int P) {
+  return start + (tid + 1) * (end - start) / P;
+}
+
 void *parallel_search(void *arg) {
   thread_data_t *data = (thread_data_t *)arg;
   size_t *start = &(data->segments[data->thread_id].start);
@@ -40,38 +48,47 @@ void *parallel_search(void *arg) {
   unsigned int p;
 
   while (!(*data->found) && *start < *end) {
+    pthread_barrier_wait(data->barrier);
+
+    if (data->v[*start] == data->number || data->number == data->v[*end - 1]) {
+      *(data->found) = 1;
+    }
+    if (data->v[*start] <= data->number && data->number <= data->v[*end - 1]) {
+      data->inside[data->thread_id] = TRUE;
+    }
+
+    pthread_barrier_wait(data->barrier);
+
     p = 0;
     while (p < data->P && data->inside[p] == FALSE) {
       p++;
     }
-    if (p < data->P) {
-      *start = data->segments[p].start + data->thread_id * (data->segments[p].end - data->segments[p].start) / data->P;
-      *end = data->segments[p].start + (data->thread_id + 1) * (data->segments[p].end - data->segments[p].start) / data->P;
+    if (p < data->P && p != data->thread_id) {
+      *start = new_start(data->segments[p].start, data->segments[p].end, data->thread_id, data->P);
+      *end = new_end(data->segments[p].start, data->segments[p].end, data->thread_id, data->P);
+      if (*start == *end) { // end - start < P
+        *end = *start + 1; // busy waiting
+      }
     }
     if (p == data->P) {
       *end = *start;
     }
 
     pthread_barrier_wait(data->barrier);
-    if (data->thread_id == 0) {
+    if (data->thread_id == p) {
+      *start = new_start(data->segments[p].start, data->segments[p].end, p, data->P);
+      *end = new_end(data->segments[p].start, data->segments[p].end, p, data->P);
+      if (*start == *end) { // end - start < P
+        *end = *start + 1; // busy waiting
+      }
       for (p = 0; p < data->P; p++) {
         data->inside[p] = FALSE;
       }
     }
-
-    pthread_barrier_wait(data->barrier);
-    if (data->v[*start] == data->number || data->number == data->v[*end - 1]) {
-      *(data->found) = 1;
-    }
-
-    if (data->v[*start] <= data->number || data->number <= data->v[*end - 1]) {
-      data->inside[data->thread_id] = TRUE;
-    }
-
-    pthread_barrier_wait(data->barrier);
   }
 
-  return NULL;
+
+  pthread_exit(NULL);
 }
 
 void display_vector(int *v, size_t N) {
@@ -134,15 +151,15 @@ int main(int argc, char *argv[]) {
 
   found = 0;
   for (i = 0; i < P; i++) {
-    inside[i] = (v[0] <= number && number <= v[N - 1]);
+    inside[i] = FALSE;
     args[i].thread_id = i;
     args[i].N = N;
     args[i].P = P;
     args[i].number = number;
     args[i].found = &found;
     args[i].segments = segments;
-    segments[i].start = 0;
-    segments[i].end = N;
+    segments[i].start = i * N / P;
+    segments[i].end = (i + 1) * N / P;
     args[i].v = v;
     args[i].inside = inside;
     args[i].barrier = barrier;
