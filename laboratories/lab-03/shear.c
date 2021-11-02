@@ -72,19 +72,6 @@ int *alloc_vector(size_t n) {
   return v;
 }
 
-void compare_vectors(int *a, int *b, size_t N) {
-  size_t i = 0;
-  while (i < N && a[i] == b[i]) {
-    i++;
-  }
-  if (i == N) {
-    printf("Correct sort\n");
-  }
-  else {
-    printf("Incorrect sort\n");
-  }
-}
-
 void display_vector(int *v, size_t N) {
   size_t i;
   unsigned int display_width = 2 + log10(N);
@@ -108,6 +95,21 @@ int cmpdesc(const void *a, const void *b) {
   return B - A;
 }
 
+#ifndef SCALABILITY
+
+void compare_vectors(int *a, int *b, size_t N) {
+  size_t i = 0;
+  while (i < N && a[i] == b[i]) {
+    i++;
+  }
+  if (i == N) {
+    printf("Correct sort\n");
+  }
+  else {
+    printf("Incorrect sort\n");
+  }
+}
+
 void print(int ** M, int *v, int *v_sorted, size_t L) {
   printf("M:\n");
   // print the square matrix
@@ -123,6 +125,21 @@ void print(int ** M, int *v, int *v_sorted, size_t L) {
   display_vector(v_sorted, N);
   compare_vectors(v, v_sorted, N);
 }
+#else
+void print(int ** M, int *v, size_t L) {
+  printf("M:\n");
+  // print the square matrix
+  display_matrix(M, L);
+
+  copy_matrix_in_vector(v, M, L);
+  unsigned int N = L * L;
+  // print the current array
+  // print the correct array
+  printf("v:\n");
+  display_vector(v, N);
+}
+#endif
+
 
 void *shear_p(void *arg) {
   struct arg_t *data = (struct arg_t *)arg;
@@ -170,7 +187,7 @@ int main(int argc, char *argv[]) {
   if (argc < 3) {
     printf("Usage: ./shear L P\n");
     printf("L = square matrix side length) P = number of threads\n");
-    exit(1);
+    return 1;
   }
 
   unsigned int L = atoi(argv[1]);
@@ -178,13 +195,26 @@ int main(int argc, char *argv[]) {
   unsigned int P = atoi(argv[2]);
   unsigned int i, j;
   int *v = alloc_vector(N);
-  int *v_qsort = alloc_vector(N);
   int **M = alloc_matrix(L, L);
 
+#ifndef SCALABILITY
+  int *v_qsort = alloc_vector(N);
   if (v == NULL || v_qsort == NULL || M == NULL) {
     fprintf(stderr, "Error on initializing values!");
-    exit(2);
+    free(v);
+    free(v_qsort);
+    free(M);
+    return 2;
   }
+#else
+  if (v == NULL || M == NULL) {
+    fprintf(stderr, "Error on initializing values!");
+    free(v);
+    free(M);
+    return 2;
+  }
+#endif
+
 
   srand(42);
   for (i = 0; i < L; i++) {
@@ -193,9 +223,11 @@ int main(int argc, char *argv[]) {
     }
   }
 
+#ifndef SCALABILITY
   // use a standard library to sort
   copy_matrix_in_vector(v_qsort, M, L);
   qsort(v_qsort, N, sizeof(int), cmp);
+#endif
 
   pthread_t tid[P];
   struct arg_t args[P];
@@ -222,14 +254,19 @@ int main(int argc, char *argv[]) {
     if (r) {
       fprintf(stderr, "An error occurred while waiting for thread %u", i);
       fprintf(stderr, "to finish.\n");
-      exit(-1);
+      exit(-2);
     }
   }
+  pthread_barrier_destroy(&barrier);
 
+#ifndef SCALABILITY
   print(M, v, v_qsort, L);
+  free(v_qsort);
+#else
+  print(M, v, L);
+#endif
 
   free(v);
-  free(v_qsort);
   free_matrix(M, L);
 
   return 0;

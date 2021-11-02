@@ -2,23 +2,22 @@
 
 routine () {
     echo "=== Testing for N = $1 P = $2 ==="
-    (time ./oets $1 $2) 2> time.txt 1> content.txt
-    echo -n "Time: "; grep real time.txt | awk '{print $2}'
-    grep -q "Correct sort" content.txt
-    if [ $? -eq 0 ]; then
+    if ./oets $1 $2 | grep -q "Correct sort"; then
         echo "Correct sort"
+        echo -n "Time for scalable code: ";
+        (time ./oets-scalar $1 $2 > /dev/null)  2> >(grep real | awk '{print $2}')
     else
         echo "Incorrect sort"  
     fi
     
     echo
-    rm -f time.txt content.txt
 }
 
 Ns=(100 100 100 100 500 1000 1000 1000)
 Ps=(  3   5   6   7   7    4    6    8) 
 
 make oets
+make oets-scalar
 
 if [ ! -f "oets" ]
 then
@@ -26,8 +25,14 @@ then
     exit 1
 fi
 
+if [ ! -f "oets-scalar" ]
+then
+    echo "The build for binary \"oets-scalar\" failed"
+    exit 2
+fi
+
 for key in "${!Ns[@]}"; do
     routine ${Ns["$key"]} ${Ps["$key"]}
 done
 
-rm -f oets
+rm -f oets oets-scalar

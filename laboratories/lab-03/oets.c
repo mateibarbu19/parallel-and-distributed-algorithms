@@ -11,17 +11,12 @@ struct arg_t {
   pthread_barrier_t *barrier;
 };
 
-void compare_vectors(int *a, int *b, size_t N) {
-  size_t i = 0;
-  while (i < N && a[i] == b[i]) {
-    i++;
+int *alloc_vector(size_t n) {
+  int *v = malloc(n * sizeof(int));
+  if (v == NULL) {
+    fprintf(stderr, "alloc_vector: vector malloc failed!");
   }
-  if (i == N) {
-    printf("Correct sort\n");
-  }
-  else {
-    printf("Incorrect sort\n");
-  }
+  return v;
 }
 
 void display_vector(int *v, size_t N) {
@@ -33,6 +28,20 @@ void display_vector(int *v, size_t N) {
   }
 
   printf("\n");
+}
+
+#ifndef SCALABILITY
+void compare_vectors(int *a, int *b, size_t N) {
+  size_t i = 0;
+  while (i < N && a[i] == b[i]) {
+    i++;
+  }
+  if (i == N) {
+    printf("Correct sort\n");
+  }
+  else {
+    printf("Incorrect sort\n");
+  }
 }
 
 int cmp(const void *a, const void *b) {
@@ -51,6 +60,7 @@ void print(int *v, int *v_sorted, size_t N) {
   display_vector(v_sorted, N);
   compare_vectors(v, v_sorted, N);
 }
+#endif
 
 void *oets_p(void *arg) {
   struct arg_t *data = (struct arg_t *)arg;
@@ -79,7 +89,7 @@ void *oets_p(void *arg) {
 int main(int argc, char *argv[]) {
   if (argc < 3) {
     printf("Usage: ./oets N P\n");
-    exit(1);
+    return 2;
   }
 
   unsigned int N = atoi(argv[1]);
@@ -89,23 +99,32 @@ int main(int argc, char *argv[]) {
   pthread_barrier_t barrier;
   struct arg_t args[P];
 
-  int *v = malloc(sizeof(int) * N);
+  int *v = alloc_vector(N);
+#ifndef SCALABILITY
+  int *v_qsort = alloc_vector(N);
+  if (v == NULL || v_qsort == NULL) {
+    fprintf(stderr, "Error on initializing values!");
+    free(v);
+    free(v_qsort);
+    return 2;
+  }
+#else
   if (v == NULL) {
-    fprintf(stderr, "Error on malloc!");
-    exit(1);
+    fprintf(stderr, "Error on initializing values!");
+    return 2;
   }
-
-  int *v_qsort = malloc(sizeof(int) * N);
-  if (v_qsort == NULL) {
-    fprintf(stderr, "Error on malloc!");
-    exit(2);
-  }
+#endif
 
   srand(42);
   for (i = 0; i < N; i++) {
-    v_qsort[i] = v[i] = rand() % N;
+    v[i] = rand() % N;
+  }
+#ifndef SCALABILITY
+  for (i = 0; i < N; i++) {
+    v_qsort[i] = v[i];
   }
   qsort(v_qsort, N, sizeof(int), cmp);
+#endif
 
   pthread_barrier_init(&barrier, NULL, P);
 
@@ -132,11 +151,16 @@ int main(int argc, char *argv[]) {
       exit(-1);
     }
   }
+  pthread_barrier_destroy(&barrier);
 
+#ifndef SCALABILITY
   print(v, v_qsort, N);
-
-  free(v);
   free(v_qsort);
+#else
+  printf("v:\n");
+  display_vector(v, N);
+#endif
+  free(v);
 
   return 0;
 }
