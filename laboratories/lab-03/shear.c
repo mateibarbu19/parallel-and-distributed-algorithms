@@ -243,7 +243,7 @@ int main(int argc, char *argv[]) {
     int r = pthread_create(&tid[i], NULL, shear_p, &args[i]);
 
     if (r) {
-      fprintf(stderr, "An error occurred while creating thread %u.", i);
+      fprintf(stderr, "An error occurred while creating thread %u.\n", i);
       exit(-1);
     }
   }

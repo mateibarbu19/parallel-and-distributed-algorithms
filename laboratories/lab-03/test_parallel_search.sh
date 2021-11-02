@@ -1,5 +1,19 @@
 #!/bin/bash
 
+routine () {
+    echo "=== Testing for N = $1 P = $2 E = $3 ==="
+    ./parallel_search $1 $2 $3
+    echo -n "Time for scalable code: ";
+    (time ./oets-scalar $1 $2 $3 > /dev/null)  2> >(grep real | awk '{print $2}')
+    
+    echo
+    sleep 1
+}
+
+Ns=(100 100 100 100 100 100)
+Ps=(  3   5   3   3   7   4)
+Es=(  4  18  19  -1 198 201)
+
 make parallel_search
 
 if [ ! -f "parallel_search" ]
@@ -8,26 +22,8 @@ then
     exit 1
 fi
 
-printf "Testing N = 100 P = 3 number = 4\n"
-./parallel_search 100 3 4
-printf "\n"
+for key in "${!Ns[@]}"; do
+    routine ${Ns["$key"]} ${Ps["$key"]} ${Es["$key"]} 
+done
 
-printf "Testing N = 100 P = 5 number = 18\n"
-./parallel_search 100 5 18
-printf "\n"
-
-printf "Testing N = 100 P = 3 number = 19\n"
-./parallel_search 100 3 19
-printf "\n"
-
-printf "Testing N = 100 P = 3 number = -1\n"
-./parallel_search 100 3 -1
-printf "\n"
-
-printf "Testing N = 100 P = 3 number = 198\n"
-./parallel_search 100 3 198
-printf "\n"
-
-printf "Testing N = 100 P = 3 number = 201\n"
-./parallel_search 100 3 201
-printf "\n"
+rm -f parallel_search

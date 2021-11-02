@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -ggdb -O0
-LDFLAGS = -lpthread -lm
+LDFLAGS = -pthread -lm
 TARGETS = oets shear merge parallel_search
 
 build: $(TARGETS)

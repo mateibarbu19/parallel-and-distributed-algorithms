@@ -87,7 +87,6 @@ void *parallel_search(void *arg) {
     }
   }
 
-
   pthread_exit(NULL);
 }
 
@@ -167,7 +166,7 @@ int main(int argc, char *argv[]) {
     int r = pthread_create(&threads[i], NULL, parallel_search, &args[i]);
 
     if (r) {
-      fprintf(stderr, "An error occurred while creating thread %u.", i);
+      fprintf(stderr, "An error occurred while creating thread %u.\n", i);
       exit(-1);
     }
   }
@@ -176,7 +175,7 @@ int main(int argc, char *argv[]) {
     int r = pthread_join(threads[i], NULL);
 
     if (r) {
-      fprintf(stderr, "An error occurred while creating thread %u.", i);
+      fprintf(stderr, "An error occurred while creating thread %u.\n", i);
       exit(-2);
     }
   }

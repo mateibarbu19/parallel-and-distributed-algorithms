@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
     int r = pthread_create(&tid[i], NULL, mergesort_p, &args[i]);
 
     if (r) {
-      fprintf(stderr, "An error occurred while creating thread %u.", i);
+      fprintf(stderr, "An error occurred while creating thread %u.\n", i);
       exit(-1);
     }
   }
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
     int r = pthread_join(tid[i], NULL);
 
     if (r) {
-      fprintf(stderr, "An error occurred while creating thread %u.", i);
+      fprintf(stderr, "An error occurred while creating thread %u.\n", i);
       exit(-2);
     }
   }
@@ -202,7 +202,6 @@ int main(int argc, char *argv[]) {
 #endif
   free(v);
   free(v_new);
-
 
   return 0;
 }
