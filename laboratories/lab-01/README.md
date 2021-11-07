@@ -1,4 +1,4 @@
-# Laboratory Exercises 1
+# Laboratory 1
 
 ## Task 1
 
