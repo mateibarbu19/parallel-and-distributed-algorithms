@@ -108,7 +108,7 @@ Since each thread is assigned `N / P` rows we know that the values for
 `d[k][j]` is owned by another thread. So that thread should broadcast the value
 of `d[k][j]` to the other threads.
 
-I would like to thank @teodutu, for the following ideea:
+I would like to thank [teodutu](https://github.com/teodutu), for the following ideea:
 
 The formula for computing line `k` is:
 
