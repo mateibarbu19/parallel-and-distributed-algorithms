@@ -101,7 +101,7 @@ At each step we use the following formula:
 d     (i)(j) = min(d     (i)(k), d     (k)(j))
 ```
 
-We divide the initial `N x N` matrix in `P` `(N / P) * N` matrices.
+We divide the initial `N x N` matrix in `P` matrices of size `(N / P) x N` .
 
 Since each thread is assigned `N / P` rows we know that the values for
 `d[i][j]` and `d[i][k]` are owned by the same thread. But the value of
