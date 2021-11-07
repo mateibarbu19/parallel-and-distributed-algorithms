@@ -106,7 +106,7 @@ Since each thread is assigned `N / P` rows we know that the values for
 of `d[k][j]` to the other threads. The solution I found was inserting a barrier
 before computing the new values for line `k` in matrix `d`.
 
-Source: *Introduction to Parallel Computing*, by Grama, Karypis, Kumar and
+Cite: *Introduction to Parallel Computing*, by Grama, Karypis, Kumar and
 Gupta
 
 Code sources: `./shortestPathsFloyd_Warshall/*`
