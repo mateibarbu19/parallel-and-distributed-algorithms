@@ -11,7 +11,7 @@ to get the maximum number of threads.
 `MyThread` implements `Runnable`, so we just instantiate an array of type
 `Thread` and pass a `MyThread` instantiation to each element's constructor.
 
-Code sources: `./hello/*`
+Code sources: [hello](./hello/)
 
 ## Task 1
 
@@ -23,7 +23,7 @@ threads modify the same memory contents in parallel. The code is actually run
 sequentially because of line `src/bug1/Main.java:22` which calls `run()`,
 instead of `start()`.
 
-Code sources: `./bug1/*`
+Code sources: [bug1](./bug1/)
 
 ## Task 2
 
@@ -32,7 +32,7 @@ Code sources: `./bug1/*`
 
 It doesn't block because the current instance of `MyThread` acquired the monitor. So it passes through the second lock with ease, because `synchronized` is reentrant.
 
-Code sources: `./bug2/*`
+Code sources: [bug2](./bug2/)
 
 ## Task 3
 
@@ -44,7 +44,7 @@ class has a pool of already created objects, which it recycles. This results
 in `a` and `b` being a reference to the same object, and thus sharing the same
 monitor.
 
-Code sources: `./bug3/*`
+Code sources: [bug3](./bug3/)
 
 ## Task 4
 
@@ -53,7 +53,7 @@ Code sources: `./bug3/*`
 In this package, the `keepRunning` flag is not `volatile`. So one each thread holds
 a different value of it's cache.
 
-Code sources: `./bug4/*`
+Code sources: [bug4](./bug4/)
 
 ## Task 5
 
@@ -69,7 +69,7 @@ alternatively, the deadlock is inevitable.
 
 Fix: move the second synchronized block in each class outside the first.
 
-Code sources: `./bug5/*`
+Code sources: [bug5](./bug5/)
 
 ## Task 6
 
@@ -77,7 +77,7 @@ Code sources: `./bug5/*`
 
 The `getInstance` method inside the `Singleton` class is not synchronized.
 
-Code sources: `./bug6/*`
+Code sources: [bug6](./bug6/)
 
 ## Task 7
 
@@ -86,7 +86,7 @@ Code sources: `./bug6/*`
 I divided the array in `N / P` parts, which are processed separately on each
 thread. 
 
-Code sources: `./doubleVectorElements/*`
+Code sources: [doubleVectorElements](./doubleVectorElements/)
 
 ## Task 8
 
@@ -96,17 +96,31 @@ At first we notice that we should use a barrier between the steps of `k`.
 
 At each step we use the following formula:
 
-$$d^{(k+1)}(i)(j) = min(d^{(k+1)}(i)(k), d^{(k+1)}(k)(j))$$
+```
+ (k+1)              (k+1)         (k+1)
+d     (i)(j) = min(d     (i)(k), d     (k)(j))
+```
 
 We divide the initial `N x N` matrix in `P` `(N / P) * N` matrices.
 
 Since each thread is assigned `N / P` rows we know that the values for
 `d[i][j]` and `d[i][k]` are owned by the same thread. But the value of
 `d[k][j]` is owned by another thread. So that thread should broadcast the value
-of `d[k][j]` to the other threads. The solution I found was inserting a barrier
-before computing the new values for line `k` in matrix `d`.
+of `d[k][j]` to the other threads.
+
+I would like to thank @teodutu, for the following ideea:
+
+The formula for computing line `k` is:
+
+```java
+for (int j = 0; j < N; j++) {
+    d[k][j] = Integer.min(d[k][j], d[k][k] + d[k][j]);
+}
+```
+
+But, since `d[k][k] = 0` the values for line `d[k]` stay the same.
 
 Cite: *Introduction to Parallel Computing*, by Grama, Karypis, Kumar and
 Gupta, Chapter 10.4
 
-Code sources: [shortestPathsFloyd_Warshall/](./shortestPathsFloyd_Warshall/)
+Code sources: [shortestPathsFloyd_Warshall](./shortestPathsFloyd_Warshall/)
