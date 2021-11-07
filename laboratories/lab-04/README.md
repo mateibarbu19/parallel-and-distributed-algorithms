@@ -107,6 +107,6 @@ of `d[k][j]` to the other threads. The solution I found was inserting a barrier
 before computing the new values for line `k` in matrix `d`.
 
 Cite: *Introduction to Parallel Computing*, by Grama, Karypis, Kumar and
-Gupta
+Gupta, Chapter 10.4
 
-Code sources: `./shortestPathsFloyd_Warshall/*`
+Code sources: [shortestPathsFloyd_Warshall/](./shortestPathsFloyd_Warshall/)
