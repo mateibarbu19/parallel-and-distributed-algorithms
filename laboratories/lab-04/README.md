@@ -51,7 +51,7 @@ Code sources: [bug3](./bug3/)
 > Description: Find the bug in the `bug4` package and fix it.
 
 In this package, the `keepRunning` flag is not `volatile`. So one each thread holds
-a different value of it's cache.
+a different value of its cache.
 
 Code sources: [bug4](./bug4/)
 

@@ -69,7 +69,7 @@ Code sources: `shear.c` and `test_shear.sh`
 4. Then `P / 4` threads merging the resulting sorted chunks in step 3.
 
 Let's say we first wanted to merge the `P` sequentially sorted parts. If a
-thread has it's last bit 0, it will merge it's designated array with the one
+thread has its last bit 0, it will merge its designated array with the one
 adjacent to it.
 Now move on the the next least significant bit, if it is 0, then merge the
 resulting sorted chunk from the last step, of length `2 * N / P`, with the
