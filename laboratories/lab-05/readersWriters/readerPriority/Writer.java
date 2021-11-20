@@ -5,7 +5,7 @@ import java.util.concurrent.BrokenBarrierException;
 public class Writer extends Thread {
     private final int id;
 
-    public Writer(int id) {
+    public Writer(final int id) {
         super();
         this.id = id;
     }
@@ -18,26 +18,21 @@ public class Writer extends Thread {
             e.printStackTrace();
         }
 
-        do {
-            try {
-                // shared space is locked
-                // Main.readWriteSem.acquire();
-                throw new InterruptedException();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            Main.roomEmpty.acquire();
 
             try {
+                System.out.println("Writer " + id + " is writing");
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
 
-            System.out.println("Writer " + id + " is writing");
+            Main.roomEmpty.release();
             Main.hasWritten[id] = true;
-
-            // Main.readWriteSem.release();
-
-        } while (!Main.hasWritten[id]);
+        } catch (final InterruptedException e) {
+            System.out.println("[Writer]: I was kicked out waiting for the room to empty.");
+            e.printStackTrace();
+        }
     }
 }

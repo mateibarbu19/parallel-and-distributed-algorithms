@@ -8,7 +8,7 @@ public class Consumer implements Runnable {
     private final int id;
     private static int i = 0;
 
-    public Consumer(Buffer buffer, int id) {
+    public Consumer(final Buffer buffer, final int id) {
         this.buffer = buffer;
         this.id = id;
     }
@@ -24,14 +24,11 @@ public class Consumer implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            int i = getNextI();
-            if (i >= Main.N_PRODUCERS * Main.N)
-                break;
+        while (getNextI() < Main.N_PRODUCERS * Main.N) {
             synchronized (Main.results) {
                 Main.results[buffer.get()]++;
             }
         }
-        System.out.println("Consumer " + id + " finished Correctly");
+        System.out.println("Consumer " + id + " finished.");
     }
 }

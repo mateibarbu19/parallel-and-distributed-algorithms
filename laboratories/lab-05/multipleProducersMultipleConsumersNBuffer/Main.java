@@ -10,11 +10,11 @@ public class Main {
     public static final int BUFFER_SIZE = 4;
     public static final int[] results = new int[N];
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
-        Buffer buffer = new Buffer(BUFFER_SIZE);
+        final Buffer buffer = new Buffer(BUFFER_SIZE);
 
-        Thread[] threads = new Thread[N_CONSUMERS + N_PRODUCERS];
+        final Thread[] threads = new Thread[N_CONSUMERS + N_PRODUCERS];
         for (int i = 0; i < N_PRODUCERS; i++) {
             threads[i] = new Thread(new Producer(buffer, i));
         }
@@ -29,7 +29,7 @@ public class Main {
         for (int i = 0; i < N_CONSUMERS + N_PRODUCERS; i++) {
             try {
                 threads[i].join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }

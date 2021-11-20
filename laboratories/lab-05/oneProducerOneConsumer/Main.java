@@ -6,10 +6,10 @@ package oneProducerOneConsumer;
 public class Main {
     public static final int N = 1000000;
 
-    public static void main(String[] args) {
-        Buffer buffer = new Buffer();
+    public static void main(final String[] args) {
+        final Buffer buffer = new Buffer();
 
-        Thread[] threads = new Thread[2];
+        final Thread[] threads = new Thread[2];
         threads[0] = new Thread(new Producer(buffer));
         threads[1] = new Thread(new Consumer(buffer));
 
@@ -19,7 +19,7 @@ public class Main {
         for (int i = 0; i < 2; i++) {
             try {
                 threads[i].join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }

@@ -1,13 +1,10 @@
 package multipleProducersMultipleConsumersNBuffer;
 
-/**
- * DO NOT MODIFY
- */
 public class Producer implements Runnable {
     private final Buffer buffer;
     private final int id;
 
-    public Producer(Buffer buffer, int id) {
+    public Producer(final Buffer buffer, final int id) {
         this.buffer = buffer;
         this.id = id;
     }
@@ -17,7 +14,7 @@ public class Producer implements Runnable {
         for (int i = 0; i < Main.N; i++) {
             buffer.put(i);
         }
-        System.out.println("Producer " + id + " finished Correctly");
+        System.out.println("Producer " + id + " finished.");
     }
 
 }

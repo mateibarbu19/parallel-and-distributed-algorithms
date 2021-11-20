@@ -6,9 +6,9 @@ package philosophersProblem;
 public class Main {
     public static final int N = 6;
 
-    public static void main(String[] args) {
-        Thread[] threads = new Thread[N];
-        Object[] forks = new Object[N];
+    public static void main(final String[] args) {
+        final Thread[] threads = new Thread[N];
+        final Object[] forks = new Object[N];
         System.out.println("Philosophers problem!");
 
         for (int i = 0; i < N; i++) {
@@ -26,7 +26,7 @@ public class Main {
         for (int i = 0; i < N; i++) {
             try {
                 threads[i].join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }

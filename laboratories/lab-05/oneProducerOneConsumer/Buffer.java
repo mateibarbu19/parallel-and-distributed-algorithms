@@ -3,11 +3,11 @@ package oneProducerOneConsumer;
 public class Buffer {
     private int a;
 
-    void put(int value) {
+    synchronized void put(final int value) {
         a = value;
     }
 
-    int get() {
+    synchronized int get() {
         return a;
     }
 }

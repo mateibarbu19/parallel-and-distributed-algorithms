@@ -29,27 +29,27 @@ public class Main {
     public static Semaphore barberDone = new Semaphore(0);
 
 
-    public static void main(String[] args) throws InterruptedException {
-        Thread barberThread = new Barber();
-        Thread[] clientThreads = new Client[TOTAL_CLIENTS];
+    public static void main(final String[] args) throws InterruptedException {
+        final Thread barberThread = new Barber();
+        final Thread[] clientThreads = new Client[TOTAL_CLIENTS];
 
         for (int i = 0; i < TOTAL_CLIENTS; i++) {
             clientThreads[i] = new Client(i);
         }
 
         barberThread.start();
-        for (Thread clientThread : clientThreads) {
+        for (final Thread clientThread : clientThreads) {
             clientThread.start();
             Thread.sleep(100);
         }
 
         barberThread.join();
-        for (var thread: clientThreads) {
+        for (final var thread: clientThreads) {
             thread.join();
         }
 
         int unservedClients = 0;
-        for (var client: leftClients) {
+        for (final var client: leftClients) {
             if (client == UNSERVED_CLIENT) {
                 unservedClients++;
             }

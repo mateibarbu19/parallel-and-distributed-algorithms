@@ -2,7 +2,6 @@ package barbershop;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 public class Barber extends Thread {
     @Override
@@ -13,8 +12,8 @@ public class Barber extends Thread {
                 Main.customer.acquire();
                 Main.lock.lock();
                 try {
-                    Client c = Main.queue.remove();
-                    Semaphore sem = c.getSem(); 
+                    final Client c = Main.queue.remove();
+                    final Semaphore sem = c.getSem(); 
                     Main.lock.unlock();
 
                     // Signal the client to come sit in the barber chair
@@ -24,7 +23,7 @@ public class Barber extends Thread {
                         System.out.println("Barber is cutting client's " + c.getIden() + " hair.");
                         // The time necessary to cut hair
                         Thread.sleep(100);
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         e.printStackTrace();
                     }
     
@@ -35,15 +34,15 @@ public class Barber extends Thread {
                     try {
                         // Are you satisfied?
                         Main.customerDone.acquire();
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         System.err.println("The client left unsatisfied!");
                         e.printStackTrace();
                     }
-                } catch (NoSuchElementException e) {
+                } catch (final NoSuchElementException e) {
                     Main.lock.unlock();
                     System.err.println("The client that was waiting disappeared!");
                 }
-            } catch (InterruptedException e1) {
+            } catch (final InterruptedException e1) {
                 System.out.println("No client has arrived for a long time.");
                 e1.printStackTrace();
             }

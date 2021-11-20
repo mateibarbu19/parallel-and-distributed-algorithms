@@ -14,7 +14,7 @@ public class Client extends Thread {
         return sem;
     }
 
-    public Client(int iden) {
+    public Client(final int iden) {
         super();
         this.iden = iden;
         sem = new Semaphore(0);
@@ -49,7 +49,7 @@ public class Client extends Thread {
         try {
             // wait for him to call me
             sem.acquire();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             Main.lock.lock();
             Main.availableChairs++;
             Main.lock.unlock();
@@ -73,7 +73,7 @@ public class Client extends Thread {
             
             System.out.println("Client " + iden + " left the barbershop.");
             Main.customerDone.release();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             System.err.println("I was kicked out of the barber chair!");
             Main.lock.lock();
             Main.availableChairs++;

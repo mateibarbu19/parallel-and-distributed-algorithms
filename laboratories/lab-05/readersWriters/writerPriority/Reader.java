@@ -2,12 +2,16 @@ package readersWriters.writerPriority;
 
 import java.util.concurrent.BrokenBarrierException;
 
+import readersWriters.LightSwitch;
+
 public class Reader extends Thread {
     private final int id;
+    private final LightSwitch readLightswitch;
 
-    public Reader(int id) {
+    public Reader(final int id) {
         super();
         this.id = id;
+        readLightswitch = new LightSwitch();
     }
 
     @Override
@@ -18,25 +22,22 @@ public class Reader extends Thread {
             e.printStackTrace();
         }
 
-        do {
-            // TODO
+        Main.noReaders.acquireUninterruptibly();
+        readLightswitch.lock(Main.noWriters);
+        Main.noReaders.release();        
 
-            Main.currentReaders++;
-            // TODO
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        Main.currentReaders++;
+        try {
             System.out.println("Reader " + id + " is reading");
-            Main.hasRead[id] = true;
-
-            // TODO
+            Thread.sleep(100);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+        Main.hasRead[id] = true;
+        synchronized (Main.currentReaders) {
             Main.currentReaders--;
-
-            // TODO
-
-        } while (!Main.hasRead[id]);
+        }
+        
+        readLightswitch.unlock(Main.noWriters);
     }
 }
