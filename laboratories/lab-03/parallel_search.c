@@ -175,7 +175,7 @@ int main(int argc, char *argv[]) {
     int r = pthread_join(threads[i], NULL);
 
     if (r) {
-      fprintf(stderr, "An error occurred while creating thread %u.\n", i);
+      fprintf(stderr, "An error occurred while waiting for thread %u.\n", i);
       exit(-2);
     }
   }

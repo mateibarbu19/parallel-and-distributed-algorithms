@@ -5,7 +5,7 @@ public class Philosopher implements Runnable {
     private final Object rightFork;
     private final int id;
 
-    public Philosopher(int id, Object leftFork, Object rightFork) {
+    public Philosopher(final int id, final Object leftFork, final Object rightFork) {
         this.leftFork = leftFork;
         this.rightFork = rightFork;
         this.id = id;
@@ -14,7 +14,7 @@ public class Philosopher implements Runnable {
     private void sleep() {
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
     }

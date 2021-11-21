@@ -9,23 +9,29 @@ import java.util.concurrent.locks.ReentrantLock;
  * Downey in The Little Book Of Semaphores, page 70
  */
 public class LightSwitch {
-    private static Integer counter = 0; 
+    private Integer counter;
+    private Lock lock;
+    
+    public LightSwitch() {
+        counter = 0;
+        lock = new ReentrantLock();
+    }
 
     public void lock(final Semaphore sem) {
-        synchronized (LightSwitch.counter) {
-            counter++;
-            if (counter == 1) {
-                sem.acquireUninterruptibly();
-            }
+        lock.lock();
+        counter++;
+        if (counter == 1) {
+            sem.acquireUninterruptibly();
         }
+        lock.unlock();
     }
 
     public void unlock(final Semaphore sem) {
-        synchronized (LightSwitch.counter) {
-            counter--;
-            if (counter == 0) {
-                sem.release();
-            }
+        lock.lock();
+        counter--;
+        if (counter == 0) {
+            sem.release();
         }
+        lock.unlock();
     }
 }
