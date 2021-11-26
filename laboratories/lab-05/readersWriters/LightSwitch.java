@@ -17,6 +17,8 @@ public class LightSwitch {
         lock = new ReentrantLock();
     }
 
+    // I believe that this design pattern could work flawlessly with a alternative signature
+    // public void lock(final Lock lock) {
     public void lock(final Semaphore sem) {
         lock.lock();
         counter++;
@@ -26,6 +28,8 @@ public class LightSwitch {
         lock.unlock();
     }
 
+    // I believe that this design pattern could work flawlessly with a alternative signature
+    // public void lock(final Lock lock) {
     public void unlock(final Semaphore sem) {
         lock.lock();
         counter--;
