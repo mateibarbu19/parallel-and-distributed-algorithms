@@ -8,13 +8,13 @@ public class Main {
     public static int[] arr = new int[size];
     public static final Object lock = new Object();
  
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         for (int i = 0; i < size; i++) {
             arr[i] = i;
         }
  
-        Thread[] properThreads = new Thread[noThreads];
-        Thread[] atomicThreads = new Thread[noThreads];
+        final Thread[] properThreads = new Thread[noThreads];
+        final Thread[] atomicThreads = new Thread[noThreads];
  
         long startTime = System.nanoTime();
         for (int i = 0; i < properThreads.length; i++) {
@@ -22,10 +22,10 @@ public class Main {
             properThreads[i].start();
         }
  
-        for (Thread properThread : properThreads) {
+        for (final Thread properThread : properThreads) {
             try {
                 properThread.join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -38,10 +38,10 @@ public class Main {
             atomicThreads[i].start();
         }
  
-        for (Thread atomicThread : atomicThreads) {
+        for (final Thread atomicThread : atomicThreads) {
             try {
                 atomicThread.join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -57,14 +57,14 @@ class AtomicThread extends Thread {
     public static AtomicInteger sum = new AtomicInteger(0);
     private final int id;
  
-    public AtomicThread(int id) {
+    public AtomicThread(final int id) {
         this.id = id;
     }
  
     @Override
     public void run() {
-        int start = id * (int) Math.ceil((double) Main.size / Main.noThreads);
-        int end = Math.min(Main.size, (id + 1) * (int) Math.ceil((double) Main.size / Main.noThreads));
+        final int start = id * (int) Math.ceil((double) Main.size / Main.noThreads);
+        final int end = Math.min(Main.size, (id + 1) * (int) Math.ceil((double) Main.size / Main.noThreads));
         for (int i = start; i < end; i++) {
             sum.getAndAdd(Main.arr[i]);
         }
@@ -75,14 +75,14 @@ class ProperThread extends Thread {
     public static int sum = 0;
     private final int id;
  
-    public ProperThread(int id) {
+    public ProperThread(final int id) {
         this.id = id;
     }
  
     @Override
     public void run() {
-        int start = id * (int) Math.ceil((double) Main.size / Main.noThreads);
-        int end = Math.min(Main.size, (id + 1) * (int) Math.ceil((double) Main.size / Main.noThreads));
+        final int start = id * (int) Math.ceil((double) Main.size / Main.noThreads);
+        final int end = Math.min(Main.size, (id + 1) * (int) Math.ceil((double) Main.size / Main.noThreads));
         for (int i = start; i < end; i++) {
             synchronized (Main.lock) {
                 sum += Main.arr[i];

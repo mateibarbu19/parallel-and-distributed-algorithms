@@ -11,10 +11,13 @@ public class MyThread implements Runnable {
 	}
 
 	private void addValue(final int key, final int value) {
-		Integer oldVal = hashMap.putIfAbsent(key, value);
+		final Integer oldVal = hashMap.putIfAbsent(key, value);
 		if (oldVal != null) {
 			hashMap.replace(key, oldVal + value);
 		}
+		// Alternative
+		// hashMap.putIfAbsent(key, 0);
+		// hashMap.computeIfPresent(key, (k, v) -> value + v);
 	}
 	
 	@Override

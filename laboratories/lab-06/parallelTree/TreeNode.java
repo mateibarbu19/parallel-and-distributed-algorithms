@@ -5,11 +5,11 @@ public class TreeNode {
 	public TreeNode left = null;
 	public TreeNode right = null;
 
-	public TreeNode(int name) {
+	public TreeNode(final int name) {
 		this.name = name;
 	}
 
-	public void addChild(TreeNode child) {
+	synchronized public void addChild(final TreeNode child) {
 		if (left == null) {
 			left = child;
 			return;
@@ -17,7 +17,7 @@ public class TreeNode {
 		right = child;
 	}
 
-	public TreeNode getNode(int name) {
+	public TreeNode getNode(final int name) {
 		TreeNode aux = null;
 
 		if (this.name == name) {

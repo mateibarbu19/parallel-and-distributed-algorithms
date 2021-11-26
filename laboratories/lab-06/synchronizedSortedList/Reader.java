@@ -9,7 +9,7 @@ public class Reader extends Thread {
     private final String filename;
     private final List<Integer> list;
 
-    public Reader(String filename, List<Integer> list) {
+    public Reader(final String filename, final List<Integer> list) {
         super();
         this.filename = filename;
         this.list = list;
@@ -18,11 +18,11 @@ public class Reader extends Thread {
     @Override
     public void run() {
         try {
-            Scanner scanner = new Scanner(new File(filename));
+            final Scanner scanner = new Scanner(new File(filename));
             while (scanner.hasNextInt()) {
                 list.add(scanner.nextInt());
             }
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             System.err.println("[Reader]: File not found!");
             e.printStackTrace();
         }

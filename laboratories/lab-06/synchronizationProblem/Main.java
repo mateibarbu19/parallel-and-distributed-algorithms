@@ -4,8 +4,8 @@ public class Main {
 	public static final int N = 100000;
 	private final static int N_ITERATIONS = 100;
 
-	public static void main(String[] args) {
-		Thread[] threads = new Thread[2];
+	public static void main(final String[] args) {
+		final Thread[] threads = new Thread[2];
 		boolean sw = true;
 		System.out.println("Synchronization problem. Do not solve me with locks.");		
 		
@@ -18,7 +18,7 @@ public class Main {
 			for (int i = 0; i < 2; i++) {
 				try {
 					threads[i].join();
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 			}

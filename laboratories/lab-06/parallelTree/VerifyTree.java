@@ -1,16 +1,13 @@
 package parallelTree;
 
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-
 public class VerifyTree implements Runnable {
 	TreeNode tree;
 
-	public VerifyTree(TreeNode tree) {
+	public VerifyTree(final TreeNode tree) {
 		this.tree = tree;
 	}
 
-	public boolean isCorrect(TreeNode tree) {
+	public boolean isCorrect(final TreeNode tree) {
 		if (tree == null) {
 			return true;
 		}
@@ -27,7 +24,7 @@ public class VerifyTree implements Runnable {
 			return false;
 		}
 
-		boolean aux = ((tree.left.name + tree.right.name) == (tree.name * 4 + 1));
+		final boolean aux = ((tree.left.name + tree.right.name) == (tree.name * 4 + 1));
 		return aux && isCorrect(tree.left) && isCorrect(tree.right);
 	}
 

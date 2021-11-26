@@ -11,10 +11,10 @@ public class Buffer {
 		queue = new LinkedBlockingQueue<>(capacity);
 	}
 
-	void put(int value) {
+	void put(final int value) {
 		try {
 			queue.put(value);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			System.err.println("Buffer: Could not put an element!");
 			e.printStackTrace();
 		}
@@ -25,7 +25,7 @@ public class Buffer {
 
 		try {
 			value = queue.take();
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			System.err.println("Buffer: Could not get an element!");
 			e.printStackTrace();
 		}

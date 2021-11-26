@@ -6,7 +6,7 @@ import java.util.List;
 public class Sort extends Thread {
     private final List<Integer> list;
 
-    public Sort(List<Integer> list) {
+    public Sort(final List<Integer> list) {
         super();
         this.list = list;
     }

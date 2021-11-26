@@ -42,6 +42,10 @@ respective key. This has to be done with `putIfAbsent`.
 If a value already existed, then simply replace it with the sum between the old
 value and second parameter.
 
+An insightful alternative provided by
+[Andrei Ionescu](https://github.com/AndreiInfo)
+is inserted as a comment.
+
 Code sources:
 [bugConcurrentHashMap](bugConcurrentHashMap)
 
@@ -54,16 +58,21 @@ Code sources:
 
 Made a 0-initialized semaphore available to all threads. Each time a reader
 finishes, it releases this semaphore. The thread wants to sort the common list,
-it simply acquires the semaphore with the number of reader threads permits. 
+acquires the semaphore with the number of reader threads permits. 
 
 Code sources:
 [synchronizedSortedList](synchronizedSortedList)
 
-## Task 4
+## Task 5
 
 > Description: Parallelize the program in `parallelTree`.
 > Two threads build the binary tree in parallel.
 > The third verifies the build validity.
+
+This one follows the same idea as the previous task. Made a 0-initialized
+semaphore available to all threads. Each time a reader finishes, it releases
+this semaphore. The thread wants to sort the common tree, acquires the semaphore
+with the number of reader threads permits. 
 
 Code sources:
 [parallelTree](parallelTree)
