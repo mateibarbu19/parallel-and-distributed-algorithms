@@ -25,7 +25,6 @@ public class MyRunnable implements Runnable {
         final Integer lastNode = partialPath.get(partialPath.size() - 1);
         if (lastNode == destination) {
             System.out.println(partialPath);
-            tpe.shutdown();
         }
         else {
             // verify all the nodes to avoid cycles
