@@ -1,6 +1,9 @@
 package task1;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     static int[][] graph = { { 0, 1 }, { 0, 4 }, { 0, 5 }, { 1, 0 }, { 1, 2 }, { 1, 6 }, { 2, 1 }, { 2, 3 }, { 2, 7 },
@@ -8,29 +11,13 @@ public class Main {
             { 6, 8 }, { 6, 9 }, { 7, 2 }, { 7, 5 }, { 7, 9 }, { 8, 3 }, { 8, 5 }, { 8, 6 }, { 9, 4 }, { 9, 6 },
             { 9, 7 } };
 
-    static void getPath(final ArrayList<Integer> partialPath, final int destination) {
-        if (partialPath.get(partialPath.size() - 1) == destination) {
-            System.out.println(partialPath);
-            return;
-        }
-
-        // se verifica nodurile pentru a evita ciclarea in graf
-        final int lastNodeInPath = partialPath.get(partialPath.size() - 1);
-        for (final int[] ints : graph) {
-            if (ints[0] == lastNodeInPath) {
-                if (partialPath.contains(ints[1]))
-                    continue;
-                final ArrayList<Integer> newPartialPath = new ArrayList<>(partialPath);
-                newPartialPath.add(ints[1]);
-                getPath(newPartialPath, destination);
-            }
-        }
-    }
-
     public static void main(final String[] args) {
         final ArrayList<Integer> partialPath = new ArrayList<>();
-        // se vor calcula toate caile de la nodul 0 la nodul 3 in cadrul grafului
         partialPath.add(0);
-        getPath(partialPath, 3);
+		final ExecutorService tpe = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		final AtomicInteger inQueue = new AtomicInteger(0);
+        inQueue.incrementAndGet();
+        // compute all the paths from node 0 to 3
+        tpe.submit(new MyRunnable(partialPath, 3, graph, inQueue, tpe));
     }
 }
