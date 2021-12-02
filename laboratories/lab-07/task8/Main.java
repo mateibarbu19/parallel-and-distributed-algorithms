@@ -1,19 +1,13 @@
 package task8;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
+
 import util.BSTOperations;
 import util.BinarySearchTreeNode;
 
 public class Main {
-    private static <T extends Comparable<T>> int calculateMaximumHeight(final BinarySearchTreeNode<T> binarySearchTree) {
-        if (binarySearchTree == null) {
-            return 0;
-        }
-
-        return 1 + Math.max(
-                calculateMaximumHeight(binarySearchTree.getRight()),
-                calculateMaximumHeight(binarySearchTree.getLeft()));
-    }
-
     public static void main(final String[] args) {
         BinarySearchTreeNode<Integer> binarySearchTree = new BinarySearchTreeNode<>(3);
         binarySearchTree = BSTOperations.insertNode(binarySearchTree, 6);
@@ -22,6 +16,15 @@ public class Main {
         binarySearchTree = BSTOperations.insertNode(binarySearchTree, 10);
         binarySearchTree = BSTOperations.insertNode(binarySearchTree, 1);
 
-        System.out.println(calculateMaximumHeight(binarySearchTree));
+        final ForkJoinPool forkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+        final RecursiveTask<Integer> query = new BSTTask<>(binarySearchTree);
+        forkJoinPool.execute(query);
+        try {
+            final Integer height = query.get();
+            System.out.println(height);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        forkJoinPool.shutdown();
     }
 }

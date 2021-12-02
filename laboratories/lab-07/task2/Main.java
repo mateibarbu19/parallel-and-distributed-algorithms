@@ -12,13 +12,11 @@ public class Main {
             { 6, 8 }, { 6, 9 }, { 7, 2 }, { 7, 5 }, { 7, 9 }, { 8, 3 }, { 8, 5 }, { 8, 6 }, { 9, 4 }, { 9, 6 },
             { 9, 7 } };
 
-    
-
     public static void main(final String[] args) {
         final ExecutorService tpe = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         final AtomicInteger inQueue = new AtomicInteger(0);
         inQueue.incrementAndGet();
         final int[] colors = new int[N];
-        tpe.submit(new MyRunnable(N, COLORS, graph, colors, 0, inQueue, tpe));
+        tpe.submit(new ColorRunnable(N, COLORS, graph, colors, 0, inQueue, tpe));
     }
 }

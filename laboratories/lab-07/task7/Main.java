@@ -1,21 +1,15 @@
 package task7;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import util.BSTOperations;
 import util.BinarySearchTreeNode;
 
 public class Main {
-    private static <T extends Comparable<T>> void searchValue(final BinarySearchTreeNode<T> binarySearchTree, final T value) {
-        if (binarySearchTree != null) {
-            if (value.equals(binarySearchTree.getValue())) {
-                System.out.println("Found value: " + binarySearchTree.getValue());
-            } else if (binarySearchTree.getValue().compareTo(value) > 0) {
-                searchValue(binarySearchTree.getLeft(), value);
-            } else {
-                searchValue(binarySearchTree.getRight(), value);
-            }
-        }
-    }
-
     public static void main(final String[] args) {
         BinarySearchTreeNode<Integer> binarySearchTree = new BinarySearchTreeNode<>(3);
         binarySearchTree = BSTOperations.insertNode(binarySearchTree, 6);
@@ -24,6 +18,21 @@ public class Main {
         binarySearchTree = BSTOperations.insertNode(binarySearchTree, 10);
         binarySearchTree = BSTOperations.insertNode(binarySearchTree, 1);
 
-        searchValue(binarySearchTree, 5);
+        final ExecutorService tpe = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
+        final AtomicInteger counter = new AtomicInteger(0);
+        counter.incrementAndGet();
+        tpe.submit(new BSTRunnable<Integer>(binarySearchTree, 1, counter, completableFuture, tpe));
+
+        try {
+            final Integer value = completableFuture.get();
+            if (value != null) {
+                System.out.println("Found value: " + value);
+            } else {
+                System.out.println("Did not find value!");
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }

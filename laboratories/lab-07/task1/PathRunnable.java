@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MyRunnable implements Runnable {
+public class PathRunnable implements Runnable {
     private final ArrayList<Integer> partialPath;
     private final Integer destination;
     private final int[][] graph;
     private final AtomicInteger inQueue;
     private final ExecutorService tpe;
 
-    public MyRunnable(final ArrayList<Integer> partialPath, final Integer destination, final int[][] graph,
+    public PathRunnable(final ArrayList<Integer> partialPath, final Integer destination, final int[][] graph,
             final AtomicInteger inQueue, final ExecutorService tpe) {
         this.partialPath = partialPath;
         this.destination = destination;
@@ -33,7 +33,7 @@ public class MyRunnable implements Runnable {
                     final ArrayList<Integer> newPartialPath = new ArrayList<>(partialPath);
                     newPartialPath.add(ints[1]);
                     inQueue.incrementAndGet();
-                    tpe.submit(new MyRunnable(newPartialPath, destination, graph, inQueue, tpe));
+                    tpe.submit(new PathRunnable(newPartialPath, destination, graph, inQueue, tpe));
                 }
             }
         }

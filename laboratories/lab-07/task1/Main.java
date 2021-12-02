@@ -14,10 +14,10 @@ public class Main {
     public static void main(final String[] args) {
         final ArrayList<Integer> partialPath = new ArrayList<>();
         partialPath.add(0);
-		final ExecutorService tpe = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		final AtomicInteger inQueue = new AtomicInteger(0);
+        final ExecutorService tpe = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        final AtomicInteger inQueue = new AtomicInteger(0);
         inQueue.incrementAndGet();
         // compute all the paths from node 0 to 3
-        tpe.submit(new MyRunnable(partialPath, 3, graph, inQueue, tpe));
+        tpe.submit(new PathRunnable(partialPath, 3, graph, inQueue, tpe));
     }
 }

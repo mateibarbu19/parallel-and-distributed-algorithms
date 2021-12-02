@@ -1,44 +1,29 @@
 package task6;
 
+import java.util.concurrent.ForkJoinPool;
+
 public class Main {
     public static int N = 4;
 
-    private static boolean check(final int[] arr, final int step) {
-        for (int i = 0; i <= step; i++) {
-            for (int j = i + 1; j <= step; j++) {
-                if (arr[i] == arr[j] || arr[i] + i == arr[j] + j || arr[i] + j == arr[j] + i)
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    private static void printQueens(final int[] sol) {
-        StringBuilder aux = new StringBuilder();
-        for (int i = 0; i < sol.length; i++) {
-            aux.append("(").append(sol[i] + 1).append(", ").append(i + 1).append("), ");
-        }
-        aux = new StringBuilder(aux.substring(0, aux.length() - 2));
-        System.out.println("[" + aux + "]");
-    }
-
-    public static void queens(final int[] graph, final int step) {
-        if (Main.N == step) {
-            printQueens(graph);
-            return;
-        }
-        for (int i = 0; i < Main.N; ++i) {
-            final int[] newGraph = graph.clone();
-            newGraph[step] = i;
-
-            if (check(newGraph, step)) {
-                queens(newGraph, step + 1);
-            }
-        }
-    }
-
     public static void main(final String[] args) {
+        final ForkJoinPool fjp = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
         final int[] graph = new int[N];
-        queens(graph, 0);
+        final Boolean success = fjp.invoke(new QueenTask(0, N, graph));
+        fjp.shutdown();
+
+        while (!fjp.isTerminated()) {
+            try {
+                Thread.sleep(500);
+            } catch (final InterruptedException e) {
+                System.err.println("Main thread was interrupted!");
+                e.printStackTrace();
+            }
+        }
+
+        if (success) {
+            System.out.println("The path finding was successful.");
+        } else {
+            System.out.println("The path finding was not successful");
+        }
     }
 }

@@ -3,7 +3,7 @@ package task2;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MyRunnable implements Runnable {
+public class ColorRunnable implements Runnable {
     private final int N;
     private final int MAX_COLORS;
     private final int[][] graph;
@@ -12,7 +12,7 @@ public class MyRunnable implements Runnable {
     private final AtomicInteger inQueue;
     private final ExecutorService tpe;
 
-    public MyRunnable(final int N, final int MAX_COLORS, final int[][] graph, final int[] colors, final int step,
+    public ColorRunnable(final int N, final int MAX_COLORS, final int[][] graph, final int[] colors, final int step,
             final AtomicInteger inQueue, final ExecutorService tpe) {
         this.N = N;
         this.MAX_COLORS = MAX_COLORS;
@@ -27,15 +27,14 @@ public class MyRunnable implements Runnable {
     public void run() {
         if (step == N) {
             printColors(colors);
-        }
-        else {
+        } else {
             // for the node at position step try all possible colors
             for (int i = 0; i < MAX_COLORS; i++) {
                 final int[] newColors = colors.clone();
                 newColors[step] = i;
-                if (verifyColors(newColors, step)) {
+                if (verifyColors(newColors, step, graph)) {
                     inQueue.incrementAndGet();
-                    tpe.submit(new MyRunnable(N, MAX_COLORS, graph, newColors, step + 1, inQueue, tpe));
+                    tpe.submit(new ColorRunnable(N, MAX_COLORS, graph, newColors, step + 1, inQueue, tpe));
                 }
             }
         }
@@ -44,16 +43,16 @@ public class MyRunnable implements Runnable {
         }
     }
 
-    private boolean verifyColors(final int[] colors, final int step) {
+    private static boolean verifyColors(final int[] colors, final int step, final int[][] graph) {
         for (int i = 0; i < step; i++) {
-            if (colors[i] == colors[step] && isEdge(i, step)) {
+            if (colors[i] == colors[step] && isEdge(i, step, graph)) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean isEdge(final int a, final int b) {
+    private static boolean isEdge(final int a, final int b, final int[][] graph) {
         for (final int[] ints : graph) {
             if (ints[0] == a && ints[1] == b) {
                 return true;
@@ -62,7 +61,7 @@ public class MyRunnable implements Runnable {
         return false;
     }
 
-    static void printColors(final int[] colors) {
+    private static void printColors(final int[] colors) {
         final StringBuilder aux = new StringBuilder();
         for (final int color : colors) {
             aux.append(color).append(" ");
