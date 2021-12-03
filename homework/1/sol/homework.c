@@ -70,6 +70,8 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  pthread_barrier_destroy(barrier);
+
   free(objects);
   free(threads);
   free(args);
