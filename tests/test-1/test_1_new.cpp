@@ -21,7 +21,7 @@ void *work(void *arg) {
   unsigned int thread_id = targ->thread_id;
   unsigned int thread_count = targ->thread_count;
   unsigned int sleep_time = targ->sleep_time;
-    std::shared_ptr<pthread_mutex_t> mutex = targ->mutex;
+  std::shared_ptr<pthread_mutex_t> mutex = targ->mutex;
   std::queue<unsigned int> &q = targ->q;
 
   if (thread_id != MASTER) {
@@ -30,9 +30,9 @@ void *work(void *arg) {
     q.push(thread_id);
     pthread_mutex_unlock(mutex.get());
   } else {
-    unsigned int sum = 0;
-    const unsigned int all_threads_sum = thread_count * (thread_count - 1) / 2;
-    while (sum != all_threads_sum) {
+    const unsigned char all_threads_flag = (1 << (thread_count - 1)) - 1;
+    unsigned char flag = 0;
+    while (flag != all_threads_flag) {
       if (!q.empty()) {
         unsigned int id = q.front();
 
@@ -41,7 +41,7 @@ void *work(void *arg) {
         pthread_mutex_unlock(mutex.get());
 
         printf("Thread %u finished.\n", id);
-        sum += id;
+        flag += 1 << (id - 1);
       }
     }
   }
