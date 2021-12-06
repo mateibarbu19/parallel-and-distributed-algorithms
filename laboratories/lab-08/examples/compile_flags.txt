@@ -1,0 +1,5 @@
+-I/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi
+-I/usr/lib/x86_64-linux-gnu/openmpi/include
+-pthread
+-L/usr/lib/x86_64-linux-gnu/openmpi/lib
+-lmpi
