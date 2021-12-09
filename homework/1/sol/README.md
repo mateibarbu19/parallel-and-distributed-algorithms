@@ -1,9 +1,5 @@
 # Homework 1
 
-*Notă*: Am scris READMEul în engleză, deoarece doresc să îmi public tema când
-va fi timpul pe GitHub. Dacă nu sunteți de acord cu acestă intenție vă rog să
-mă contactați.
-
 > Description: Parallelize a genetic algorithm that solves the knapsack problem.
 
 ### First step
