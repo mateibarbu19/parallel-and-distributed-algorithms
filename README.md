@@ -13,7 +13,8 @@ check their [Github repo](https://github.com/APD-UPB/APD).
 
 This project aims to provide a improvements to the original
 [Open CourseWare](https://ocw.cs.pub.ro/courses/apd) Parallel and Distributed
-Algorithms Laboratories taught at [Politehnica University of Bucharest](upb.ro).
+Algorithms Laboratories taught at
+[Politehnica University of Bucharest](https://upb.ro).
 
 Here is the list of the improvements I brought (although not limited to):
 
