@@ -9,6 +9,18 @@ check their [Github repo](https://github.com/APD-UPB/APD).
 
 <img align="center" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Fork_join.svg/1920px-Fork_join.svg.png">
 
+Table of Contents
+=================
+
+* [Parallel-and-distributed-algorithms](#parallel-and-distributed-algorithms)
+   * [1. Repository description](#1-repository-description)
+   * [2. Requirements](#2-requirements)
+   * [3. Usage](#3-usage)
+   * [4. Other projects](#4-other-projects)
+   * [5. Acknowledgments](#5-acknowledgments)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+
 ## 1. Repository description
 
 This project aims to provide a improvements to the original
