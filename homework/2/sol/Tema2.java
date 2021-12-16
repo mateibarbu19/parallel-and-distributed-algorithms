@@ -25,7 +25,7 @@ public class Tema2 {
             System.exit(1);
         }
 
-        final MasterMapReduce<String, InitialData, String, IntermediateResult, Result> master = new MasterMapReduce<>(
+        final MasterMapReducer<String, InitialData, String, IntermediateResult, Result> master = new MasterMapReducer<>(
                 numberOfWorkers);
 
         final int fragmentDimension = scanner.nextInt();

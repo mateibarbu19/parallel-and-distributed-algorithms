@@ -8,13 +8,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class MasterMapReduce<K1, V1, K2, V2, V3> {
+public class MasterMapReducer<K1, V1, K2, V2, V3> {
     private final ExecutorService mapPool;
     private final ExecutorService reducePool;
     private final List<MapOperation<K1, V1, K2, V2>> mapTasks;
     private final List<ReduceOperation<K2, V2, V3>> reduceTasks;
 
-    MasterMapReduce(final int numberOfWorkers) {
+    MasterMapReducer(final int numberOfWorkers) {
         mapPool = Executors.newFixedThreadPool(numberOfWorkers);
         reducePool = Executors.newFixedThreadPool(numberOfWorkers);
         mapTasks = new LinkedList<>();
@@ -51,7 +51,7 @@ public class MasterMapReduce<K1, V1, K2, V2, V3> {
                 e.printStackTrace();
             }
             return null;
-        }).flatMap(l -> l.stream()).collect(
+        }).flatMap(List::stream).collect(
                 Collectors.groupingBy(Entry::getKey, Collectors.mapping(Entry::getValue, Collectors.toList())));
         return mapResults;
     }
