@@ -1,4 +1,4 @@
-build:
-	mpicc ex3.c -o ex3
-clear:
-	rm ex3
+EXEC = ex3
+
+%:
+	make EXEC="$(EXEC)" -f ../Makefile $@
