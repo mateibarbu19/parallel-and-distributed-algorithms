@@ -31,9 +31,6 @@ internal_test/output.txt: build
 run: internal_test/output.txt
 	@(echo "The program halted.")
 
-#package targets
-$(PACKAGES) : % : $(call PACKAGE_OBJS,%)
-
 clean:
 	rm -rf $(BIN_DIR)
 	# find . -name '*.class' -exec rm -f {} \;
