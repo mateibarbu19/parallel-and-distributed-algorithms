@@ -4,6 +4,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import data.InitialData;
+import data.IntermediateResult;
+import mapReduce.MapOperation;
+import mapReduce.MapReduceEntry;
+
 import java.util.StringTokenizer;
 
 public class MapDoc extends MapOperation<String, InitialData, String, IntermediateResult> {

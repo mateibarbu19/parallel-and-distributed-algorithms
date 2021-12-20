@@ -1,3 +1,5 @@
+package data;
+
 import java.nio.file.Paths;
 
 public class Result implements Comparable<Result> {

@@ -1,3 +1,5 @@
+package data;
+
 public class InitialData {
     private final int fragmentDimension;
     private final long position;

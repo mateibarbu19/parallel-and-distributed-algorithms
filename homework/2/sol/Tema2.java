@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import data.InitialData;
+import data.IntermediateResult;
+import data.Result;
+import mapReduce.MasterMapReducer;
+
 public class Tema2 {
     public static void main(final String[] args) {
         if (args.length < 3) {

@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import data.IntermediateResult;
+import data.Result;
+import mapReduce.ReduceOperation;
+import utils.Fibonacci;
+
 public class ReduceDoc extends ReduceOperation<String, IntermediateResult, Result> {
     /**
      * @param documentPath

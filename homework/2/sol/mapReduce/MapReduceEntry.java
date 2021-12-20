@@ -1,3 +1,5 @@
+package mapReduce;
+
 import java.util.Map;
 
 public class MapReduceEntry<K, V> implements Map.Entry<K, V> {

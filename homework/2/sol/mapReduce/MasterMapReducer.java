@@ -1,3 +1,5 @@
+package mapReduce;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,7 @@ public class MasterMapReducer<K1, V1, K2, V2, V3> {
     private final List<MapOperation<K1, V1, K2, V2>> mapTasks;
     private final List<ReduceOperation<K2, V2, V3>> reduceTasks;
 
-    MasterMapReducer(final int numberOfWorkers) {
+    public MasterMapReducer(final int numberOfWorkers) {
         mapPool = Executors.newFixedThreadPool(numberOfWorkers);
         reducePool = Executors.newFixedThreadPool(numberOfWorkers);
         mapTasks = new LinkedList<>();
