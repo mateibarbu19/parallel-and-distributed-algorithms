@@ -1,4 +1,4 @@
-build:
-	mpicc scan.c -o scan
-clear:
-	rm scan
+EXEC = scan
+
+%:
+	make EXEC="$(EXEC)" -f ../Makefile $@

@@ -1,4 +1,4 @@
-build:
-	mpicc broadcast.c -o broadcast
-clear:
-	rm broadcast
+EXEC = broadcast
+
+%:
+	make EXEC="$(EXEC)" -f ../Makefile $@

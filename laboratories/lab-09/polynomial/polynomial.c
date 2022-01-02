@@ -12,58 +12,86 @@ int main(int argc, char * argv[]) {
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nProcesses);
-	printf("Hello from %i/%i\n", rank, nProcesses);
+	printf("Hello from %i/%i.\n", rank, nProcesses);
 
 	if (rank == MASTER) { // This code is run by a single process
 		int polynomialSize, n;
-		int x = 5; // valoarea cu care se calculeaza polinomul - f(5)
+		float x = 5, sum; // the value on which the polynomial function is applied - f(5)
 
 		/*
-			in fisierul de intrare formatul este urmatorul:
-			numarul_de_coeficienti
-			coeficient x^0
-			coeficient x^1
+			the input file has the following format:
+			number_of_coefficients
+			coefficient for x^0
+			coefficient for x^1
 			etc.
 		*/
 
 		FILE * polFunctionFile = fopen(argv[1], "rt");
 		fscanf(polFunctionFile, "%d", &polynomialSize);
 		/*
-			in array-ul a se vor salva coeficientii ecuatiei / polinomului
-			de exemplu: a = {1, 4, 4} => 1 * (x ^ 2) + 4 * (x ^ 1) + 4 * (x ^ 0)
+			array a stores the polynomial coefficients
+			e.g. a = {1, 4, 4} => 1 * (x ^ 2) + 4 * (x ^ 1) + 4 * (x ^ 0)
 		*/
-		float *a = malloc(sizeof(float)*polynomialSize);
-		for (int i = 0; i < polynomialSize; i++) {
-			fscanf(polFunctionFile, "%f", &a[i]);
-			printf("Read value %f\n", a[i]);
-			/*
-				Se trimit coeficientii pentru x^1, x^2 etc. proceselor 1, 2 etc.
-				Procesul 0 se ocupa de x^0 si are valoarea coeficientului lui x^0
-			*/
+		float *a = malloc(sizeof(float) * polynomialSize);
+		if (a == NULL) {
+			exit(1);
 		}
-
+		for (int i = 0; i < polynomialSize - 1; i++) {
+			fscanf(polFunctionFile, "%f", &a[i]);
+			printf("Read value %f.\n", a[i]);
+			/*
+				Send the coefficients for x^0, x^1, etc. to processes
+				polynomialSize - 1, polynomialSize - 2, etc.
+				Process 0 stores the coefficient for x^0.
+			*/
+			printf("Process with rank [%d], sent x, %f, and coefficient, %f, to [%d].\n",
+					rank, x, a[i], polynomialSize - 1 - i);
+			MPI_Send(&x, 1, MPI_FLOAT, polynomialSize - 1 - i, 1, MPI_COMM_WORLD);
+			MPI_Send(&a[i], 1, MPI_FLOAT, polynomialSize - 1 - i, 1, MPI_COMM_WORLD);
+		}
+		fscanf(polFunctionFile, "%f", &a[polynomialSize - 1]);
+		printf("Read value %f.\n\n", a[polynomialSize - 1]);
 		fclose(polFunctionFile);
 
-		// Se trimit valorile x si suma partiala (in acest caz valoarea coeficientului lui x^0)
+		MPI_Status status;
+		MPI_Recv(&sum, 1, MPI_FLOAT, rank + 1, 1, MPI_COMM_WORLD, &status);
+		printf("Process with rank [%d], received sum %f from [%d].\n",
+				rank, sum, status.MPI_SOURCE);
+		sum = sum * x + a[polynomialSize - 1];
+		free(a);
+
+		printf("Polynomial function application result is: %f.\n", sum);
 	} else {
-		float val, sum;
-		int x;
+		MPI_Status status;
+		float x, coef, sum;
 
 		/*
-			se primesc: 
-			- coeficientul corespunzator procesului (exemplu procesul 1 primeste coeficientul lui x^1)
-			- suma partiala
-			- valoarea x din f(x)
-			si se calculeaza valoarea corespunzatoare pentru c * x^r, r fiind rangul procesului curent
-			si c fiind coeficientul lui x^r, si se aduna la suma
+			receive:
+			- the partial sum 
+			- the value of x in f(x)
+			- the coefficient
 		*/
-
-		if (rank == nProcesses - 1) {
-			printf("Polynom value is %f\n", sum);
+		if (rank != nProcesses - 1) {
+			MPI_Recv(&sum, 1, MPI_FLOAT, rank + 1, 1, MPI_COMM_WORLD, &status);
+			printf("Process with rank [%d], received sum %f from [%d].\n",
+					rank, sum, status.MPI_SOURCE);
 		} else {
-			// se trimit x si suma partiala catre urmatorul proces
+			sum = 0;
 		}
+		MPI_Recv(&x, 1, MPI_FLOAT, MASTER, 1, MPI_COMM_WORLD, &status);
+		sum *= x;
+		printf("Process with rank [%d], received x %f from [%d].\n",
+				rank, x, status.MPI_SOURCE);
+		MPI_Recv(&coef, 1, MPI_FLOAT, MASTER, 1, MPI_COMM_WORLD, &status);
+		sum += coef;
+		printf("Process with rank [%d], received coef %f from [%d].\n",
+				rank, coef, status.MPI_SOURCE);
+		
+		MPI_Send(&sum, 1, MPI_FLOAT, rank - 1, 1, MPI_COMM_WORLD);
+		printf("Process with rank [%d], sent sum %f to [%d].\n",
+				rank, sum, rank - 1);
 	}
+			
 
 	MPI_Finalize();
 	return 0;
