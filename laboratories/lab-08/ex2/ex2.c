@@ -13,7 +13,10 @@ int main(int argc, char *argv[]) {
 
   // Root process generates a random number.
   srand(42);
-  int rand_num = rand();
+  int rand_num;
+  if (rank == ROOT) {
+    rand();
+  }
 
   // Broadcasts to all processes.
   MPI_Bcast(&rand_num, 1, MPI_INT, 0, MPI_COMM_WORLD);

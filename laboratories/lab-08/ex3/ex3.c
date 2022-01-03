@@ -12,8 +12,8 @@ void *alloc_vector(size_t nmemb, size_t size) {
     fprintf(stderr, "alloc_vector: vector calloc failed!");
   }
   return v;
-  return 0;
 }
+
 int main(int argc, char *argv[]) {
   int numtasks, rank, len;
   char hostname[MPI_MAX_PROCESSOR_NAME];
