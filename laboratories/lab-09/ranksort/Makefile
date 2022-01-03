@@ -1,4 +1,4 @@
-build:
-	mpicc ranksort.c -o ranksort
-clear:
-	rm ranksort
+EXEC = ranksort
+
+%:
+	make EXEC="$(EXEC)" -f ../Makefile $@
