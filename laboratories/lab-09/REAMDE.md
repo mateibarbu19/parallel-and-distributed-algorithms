@@ -22,7 +22,7 @@ explanations.
 
 ## Task 4
 
-> Description: 
+> Description: Implement a pipeline polynomial function.
 
 ## Task 5
 
