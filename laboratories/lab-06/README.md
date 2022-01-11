@@ -43,7 +43,7 @@ If a value already existed, then simply replace it with the sum between the old
 value and second parameter.
 
 An insightful alternative provided by
-[Andrei Ionescu](https://github.com/AndreiInfo)
+[Andrei Ionescu](https://github.com/Andrei-Info)
 is inserted as a comment.
 
 Code sources:
