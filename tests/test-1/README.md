@@ -8,5 +8,6 @@ It uses only C-style pointers.
 [The new solutions](test_1_new.cpp) is a improved version using "smart"
 pointers.
 
-Note: This problem can be reduced to Readers-writers with only one reader.
-So it could be solved with two semaphores.
+Note: My solution was graded 9/10 because it uses busy-waiting. This problem can
+be reduced to Readers-writers with only one reader. So it could be solved with
+two semaphores without busy-waiting.
