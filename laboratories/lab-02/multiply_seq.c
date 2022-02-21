@@ -7,9 +7,11 @@ void multiply_seq(int **a, int **b, int **c, size_t N) {
   size_t i, j, k;
   for (i = 0; i < N; i++) {
     for (j = 0; j < N; j++) {
+      int sum = 0;
       for (k = 0; k < N; k++) {
-        c[i][j] += a[i][k] * b[k][j];
+        sum += a[i][k] * b[k][j];
       }
+      c[i][j] = sum; // appears to be a significat improvement when using -O0
     }
   }
 }

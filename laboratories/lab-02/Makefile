@@ -1,6 +1,6 @@
 CC = gcc
 NUM_THREADS = 4
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -O0
 LDFLAGS = -lpthread
 PFLAGS = -DNUM_THREADS=$(NUM_THREADS)
 PROTECTED=
