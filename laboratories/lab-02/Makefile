@@ -5,7 +5,7 @@ LDFLAGS = -lpthread
 PFLAGS = -DNUM_THREADS=$(NUM_THREADS)
 PROTECTED=
 TARGETS = mutex barrier multiply_seq multiply_outer multiply_middle \
-		  multiply_inner strassen strassen_par
+		  multiply_inner multiply_reverse strassen strassen_par
 
 build: $(TARGETS)
 

@@ -8,6 +8,7 @@ make PROTECTED=-DPROTECTED multiply_inner
 make multiply_middle
 make multiply_outer
 make multiply_cache_tiling
+make multiply_reverse
 
 if [ ! -f "multiply_seq" ]
 then
@@ -33,6 +34,12 @@ then
     exit 4
 fi
 
+if [ ! -f "multiply_reverse" ]
+then
+    echo "The binary file \"multiply_reverse\" is missing!"
+    exit 5
+fi
+
 echo "=== Running outer parallelized matrix multiplication algorithm ==="
 (time ./multiply_outer $N $P > par_outer.txt) 2> >(grep real | awk '{print $2}')
 sleep 1
@@ -47,6 +54,9 @@ echo "=== Running sequential matrix multiplication algorithm (trivial) ==="
 sleep 1
 echo "=== Running sequential matrix multiplication algorithm (with cache tiling) ==="
 (time ./multiply_cache_tiling $N > seq.txt) 2> >(grep real | awk '{print $2}')
+sleep 1
+echo "=== Running sequential matrix multiplication algorithm (with reverse) ==="
+(time ./multiply_reverse $N > seq.txt) 2> >(grep real | awk '{print $2}')
 sleep 1
 
 
