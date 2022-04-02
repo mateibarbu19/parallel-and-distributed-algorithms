@@ -1,0 +1,5 @@
+10
+3
+internal_test/in1
+internal_test/in2
+internal_test/in3
